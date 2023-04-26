@@ -6,6 +6,8 @@ const WINDOW_SIZE : Vector2i = Vector2i(400, 254)
 
 # GLOBAL VARIABLES: 
 var program : Array
+var graphic : Array
+var sound : Array
 var rand : int = 1		# rand,32,1
 var swstack : int	# switch stack	
 var swtemp1 : int
