@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://0r7aknasswe"]
+
+[ext_resource type="Script" path="res://scripts/Attract.gd" id="1_6yl8y"]
+
+[node name="Attract" type="Node2D"]
+script = ExtResource("1_6yl8y")
+
+[node name="Button" type="Button" parent="."]
+offset_left = 143.0
+offset_top = 112.0
+offset_right = 269.0
+offset_bottom = 143.0
+text = "Return To Start"

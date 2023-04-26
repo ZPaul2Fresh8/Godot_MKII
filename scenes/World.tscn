@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://0wueqxlmtkjx"]
+
+[ext_resource type="Script" path="res://scripts/World.gd" id="1_et5ff"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_et5ff")
+
+[node name="ButtonMainMenu" type="Button" parent="."]
+offset_left = 126.0
+offset_top = 187.0
+offset_right = 280.0
+offset_bottom = 247.0
+text = "Quit to Main Menu"

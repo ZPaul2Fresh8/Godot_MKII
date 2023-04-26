@@ -1,0 +1,88 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgnhxjf0m4ivp"]
+
+[ext_resource type="Script" path="res://scripts/StartUp.gd" id="1_n7ypl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b4r5p"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="StartUp" type="Node2D"]
+script = ExtResource("1_n7ypl")
+ShowFramesPerSecond = true
+metadata/_edit_vertical_guides_ = []
+metadata/_edit_horizontal_guides_ = []
+
+[node name="BG" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 400.0
+offset_bottom = 255.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b4r5p")
+
+[node name="FPS_Label" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(24, 24)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 367.0
+offset_top = 6.0
+offset_right = 391.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/default_color = Color(0, 1, 0, 1)
+text = "0"
+
+[node name="RichTextLabelM" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(250, 25)
+offset_right = 250.0
+offset_bottom = 25.0
+
+[node name="GridContainer" type="GridContainer" parent="."]
+custom_minimum_size = Vector2(400, 254)
+offset_right = 400.0
+offset_bottom = 254.0
+columns = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="Menu" type="MenuBar" parent="GridContainer"]
+custom_minimum_size = Vector2(400, 254)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button_LoadWorld" type="Button" parent="GridContainer/Menu"]
+custom_minimum_size = Vector2(250, 25)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -125.0
+offset_top = -54.0
+offset_right = 125.0
+offset_bottom = -23.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Test Load Scene"
+
+[node name="Button_Quit" type="Button" parent="GridContainer/Menu"]
+custom_minimum_size = Vector2(250, 25)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -125.0
+offset_top = -15.5
+offset_right = 125.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Quit Game"
