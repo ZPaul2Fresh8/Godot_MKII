@@ -4,6 +4,30 @@ const REVISION : String = "REVISION 3.1"
 const FRAME_RATE : float = 53.20
 const WINDOW_SIZE : Vector2i = Vector2i(400, 254)
 
+enum game_state {
+	gs_amode = 0x1,			# game is in attract mode
+	gs_fighting = 0x2,		
+	gs_buyin = 0x3,			
+	gs_psel = 0x4,			# fighter select mode
+	gs_bonus = 0x5,			# bonus count state
+	gs_pfsetup = 0x6,		# pre-fight setup state
+	gs_round_intro = 0x7,	# round intro
+	gs_diag = 0x8,			# game is in diagnostics/audits/adjustments
+	gs_pitfall = 0x9,		# fallin down the pit
+	gs_initials = 0xa,		# enter initials
+	gs_gameover = 0xb,		# game over
+	gs_octopus = 0xc,		# octopus mode
+	gs_post_psel = 0xd,		# post player select mode
+	gs_barge = 0xe,			# player barging in mode
+	gs_sec_intro = 0xf		# intro secret
+}
+
+# PROCESSES
+var procs = [Process_Resource]
+
+# OBJECTS
+var objs = [Object_Resource]
+
 # GLOBAL VARIABLES: 
 var program : Array
 var graphic : Array
@@ -36,7 +60,7 @@ var swtemp4 : int
 #start_of_dram,0,1
 #irqskye,16,1		# actual sky color (autoerase)
 #page,16,1
-#tick,16,1		# universal timer zeroed at round start
+var tick : int		# universal timer zeroed at round start
 #noflip,16,1		# no page flipping needed
 #displayon,16		# do display processing when != 0
 #dlists,32,1		# display lists table
@@ -128,7 +152,7 @@ var swtemp4 : int
 #     MORTAL KOMBAT GAME SPECIFIC RAM
 #
 #************************************
-#gstate,16,1	  # game state variable
+var gamestate : int		# state variable
 
 #switch_escape,16,1 	#
 

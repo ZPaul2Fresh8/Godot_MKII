@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 Global="*res://Global.gd"
 LoadAssets="*res://scripts/LoadAssets.gd"
+Equates2="*res://Equates.gd"
 
 [display]
 

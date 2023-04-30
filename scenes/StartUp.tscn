@@ -1,9 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://cgnhxjf0m4ivp"]
+[gd_scene load_steps=4 format=3 uid="uid://cgnhxjf0m4ivp"]
 
 [ext_resource type="Script" path="res://scripts/StartUp.gd" id="1_n7ypl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b4r5p"]
 bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_em0kf"]
+bg_color = Color(0.133333, 0.133333, 0.133333, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0, 0, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+corner_detail = 16
 
 [node name="StartUp" type="Node2D"]
 script = ExtResource("1_n7ypl")
@@ -50,6 +63,7 @@ columns = 3
 metadata/_edit_use_anchors_ = true
 
 [node name="Menu" type="MenuBar" parent="GridContainer"]
+visible = false
 custom_minimum_size = Vector2(400, 254)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -86,3 +100,42 @@ offset_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "Quit Game"
+
+[node name="NoticePanel" type="Panel" parent="."]
+offset_left = 23.0
+offset_top = 58.0
+offset_right = 377.0
+offset_bottom = 211.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_em0kf")
+
+[node name="Notice" type="RichTextLabel" parent="NoticePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 5.0
+offset_right = -14.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "No assets detected. With mk2 ROM unzipped in /rom directory, asset extraction will be attempted. This will only need to be performed once."
+scroll_active = false
+
+[node name="OK_Button" type="Button" parent="NoticePanel/Notice"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -33.0
+offset_top = -52.0
+offset_right = 33.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_focus_color = Color(1, 0, 0, 1)
+text = "Extract"
+
+[connection signal="pressed" from="NoticePanel/Notice/OK_Button" to="." method="_on_ok_button_pressed"]
