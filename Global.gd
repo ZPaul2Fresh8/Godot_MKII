@@ -1,26 +1,25 @@
 extends Node
 
-const REVISION : String = "REVISION 3.1"
+const GAME_TITLE : String = "Mortal Kombat II"
+const REVISION : String = "Revision 3.1"
 const FRAME_RATE : float = 53.20
 const WINDOW_SIZE : Vector2i = Vector2i(400, 254)
 
-enum game_state {
-	gs_amode = 0x1,			# game is in attract mode
-	gs_fighting = 0x2,		
-	gs_buyin = 0x3,			
-	gs_psel = 0x4,			# fighter select mode
-	gs_bonus = 0x5,			# bonus count state
-	gs_pfsetup = 0x6,		# pre-fight setup state
-	gs_round_intro = 0x7,	# round intro
-	gs_diag = 0x8,			# game is in diagnostics/audits/adjustments
-	gs_pitfall = 0x9,		# fallin down the pit
-	gs_initials = 0xa,		# enter initials
-	gs_gameover = 0xb,		# game over
-	gs_octopus = 0xc,		# octopus mode
-	gs_post_psel = 0xd,		# post player select mode
-	gs_barge = 0xe,			# player barging in mode
-	gs_sec_intro = 0xf		# intro secret
-}
+var up_vel = 0xa000
+var up_grav = 0x8000
+
+var bb_fatality = 5
+var pit_fatality = 6
+var fs_fatality = 7
+var spike_fatality = 8
+
+var pong_battle_num = 250
+var close_to_edge = 68			# this constitutes being close to the edge
+var floor_ice_time = 60
+var full_strength = 0xa1
+
+var front_z = 050
+var back_z = 0x04
 
 # PROCESSES
 var procs = [Process_Resource]
@@ -29,9 +28,9 @@ var procs = [Process_Resource]
 var objs = [Object_Resource]
 
 # GLOBAL VARIABLES: 
-var program : Array
-var graphic : Array
-var sound : Array
+var program : PackedByteArray = []
+var graphic : = PackedByteArray()
+var sound : PackedByteArray = []
 var rand : int = 1		# rand,32,1
 var swstack : int	# switch stack	
 var swtemp1 : int

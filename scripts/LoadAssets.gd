@@ -3,6 +3,7 @@ extends Node
 const PROGRAM_FILE = "res://assets/mk2.program"
 const GRAPHICS_FILE = "res://assets/mk2.graphics"
 const SOUNDS_FILE = "res://assets/mk2.sounds"
+const GFX_HEADERS = "res://assets/gfx_headers.txt"
 
 # LOADS ASSETS FROM THE GAME AT STARTUP
 
@@ -239,4 +240,85 @@ func CreateFiles():
 		file.store_buffer(Global.sound)
 		
 		print("Sound Roms successfully joined.")
+
+
+var bytecount = 0 #0010 002c 0000 0000 7254 054c 6080
+var word = 0
+var header : Array
+var address : int
+func Find_Img_Headers():
+	# FIND IMAGE HEADERS
 	
+	var file = FileAccess.open(GFX_HEADERS, FileAccess.WRITE)
+		
+	#var lines : Array = FileAccess.get_file_as_string(GFX_HEADERS).split("\n")
+	
+	# take 2 bytes at a time and see if they meet the criteria of an image
+	# header -> 00ww 00hh xxxx xxxx xxxx =<07xx 0xx0 (xxx0 ff=>80) palette opt.
+
+	while (bytecount < Global.program.size()):
+		
+		# end while loop if end of file
+		if (bytecount >= Global.program.size() - 128):
+			break
+		
+		# format header
+		header.clear()
+		address = bytecount
+		
+		# check width criteria
+		make_word()
+		if (word > 0xff):
+			continue
+		if (word == 0):
+			continue
+		
+		# check height criteria
+		make_word()
+		if (word > 0xff):
+			continue
+		if (word == 0):
+			continue
+		
+		# grab x offset
+		make_word()
+		if (word > 399) || (word < -399):
+			continue
+		
+		# grab y offset
+		make_word()
+		if (word > 253) || (word < -253):
+			continue
+		
+		#grab sprite address minor - data doesn't really matter here either
+		make_word()
+		
+		# grab sprite address major - highest value should be < 0x0800
+		make_word()
+		if (word > 0x07ff):
+			continue
+		if (word == 0):
+			continue
+		
+		# check draw attribute criteria
+		make_word()
+		if ((word >> 0xc) > 6 ):
+			continue
+		elif  ((word >> 0xc) == 0):
+			continue
+		elif ((word & 0xf) != 0):
+			continue
+		
+		# build string
+		var line : String = ("0x%05X" % address + "|" + "%04X" % header[0] + "|" +
+			"%04X" % header[1] + "|" + "%04X" % header[2] + "|" + "%04X" % header[3] +
+			"|" + "%04X" % header[5] + "%04X" % header[4] + "|" + "%04X" % header[6])
+
+		#print(line)	
+		file.store_line(line)
+
+
+func make_word():
+	word = Global.program[bytecount] << 8 | Global.program[bytecount+1]
+	header.append(word)
+	bytecount += 2

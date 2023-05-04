@@ -3,6 +3,24 @@ class_name Equates
 
 # EQUATES
 
+enum game_state {
+	gs_amode = 0x1,			# game is in attract mode
+	gs_fighting = 0x2,		
+	gs_buyin = 0x3,			
+	gs_psel = 0x4,			# fighter select mode
+	gs_bonus = 0x5,			# bonus count state
+	gs_pfsetup = 0x6,		# pre-fight setup state
+	gs_round_intro = 0x7,	# round intro
+	gs_diag = 0x8,			# game is in diagnostics/audits/adjustments
+	gs_pitfall = 0x9,		# fallin down the pit
+	gs_initials = 0xa,		# enter initials
+	gs_gameover = 0xb,		# game over
+	gs_octopus = 0xc,		# octopus mode
+	gs_post_psel = 0xd,		# post player select mode
+	gs_barge = 0xe,			# player barging in mode
+	gs_sec_intro = 0xf		# intro secret
+	}
+
 enum char_id {
 	Kung_Lao,
 	Liu_Kang,

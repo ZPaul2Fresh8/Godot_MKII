@@ -56,6 +56,7 @@ offset_right = 250.0
 offset_bottom = 25.0
 
 [node name="GridContainer" type="GridContainer" parent="."]
+visible = false
 custom_minimum_size = Vector2(400, 254)
 offset_right = 400.0
 offset_bottom = 254.0
@@ -129,13 +130,39 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -33.0
-offset_top = -52.0
-offset_right = 33.0
-offset_bottom = -16.0
+offset_left = -118.0
+offset_top = -55.0
+offset_right = -52.0
+offset_bottom = -19.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_focus_color = Color(1, 0, 0, 1)
 text = "Extract"
 
+[node name="ToolPanel" type="Panel" parent="."]
+offset_left = 188.0
+offset_top = 168.0
+offset_right = 377.0
+offset_bottom = 238.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_em0kf")
+
+[node name="MenuBar" type="MenuBar" parent="ToolPanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FindGFXBTN" type="Button" parent="ToolPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 86.0
+offset_top = 58.0
+offset_right = -92.0
+offset_bottom = -54.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Find GFX Headers"
+
 [connection signal="pressed" from="NoticePanel/Notice/OK_Button" to="." method="_on_ok_button_pressed"]
+[connection signal="pressed" from="ToolPanel/FindGFXBTN" to="." method="_on_find_gfxbtn_pressed"]
