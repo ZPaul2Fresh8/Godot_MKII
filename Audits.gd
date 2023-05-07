@@ -1,0 +1,210 @@
+extends Node
+class_name Audits
+
+# not sure if I want to store these variables in here
+# or in the global which is preloaded upon app start.
+# if not in global then we must instantiate this at use,
+# which means loading of audits and saving them at each
+# life cycle
+
+func _ready():
+	print(audits[self.audits_enum.aud_choose_hh])
+
+# AUDIT VARIBLES
+var bad_aut = 0						# 10B95A0h
+
+# AUDITS - DICT NOT USED, JUST TESTING IDEA
+var audits_dict = {
+	"audnull_dict" : 0,
+	"audlcoin" : 0,	# total coins in left chute,
+	"audccoin" : 0,	# total coins in center chute,
+	"audrcoin" : 0,	# total coins in right chute,
+	"aud4coin" : 0,	# total coins in fourth chute,
+	"audscoin" : 0,	# total service credits,
+	"audpaidc" : 0,	# total paid credits,
+	
+	# game audits start here
+	"aud_choose_hh" : 0,	# kung lao chosen,
+	"aud_choose_lk" : 0,	# kang chosen,
+	"aud_choose_jc" : 0,	# cage chosen,
+	"aud_choose_sa" : 0,	# baraka chosen,
+	"aud_choose_fn1" : 0,	# kitana chosen,
+	"aud_choose_fn2" : 0,	# mileena chosen,
+	"aud_choose_st" : 0,	# shang tsung chosen,
+	"aud_choose_rd" : 0,	# raiden chosen,
+	"aud_choose_sz" : 0,	# subzero chosen,
+	"aud_choose_rp" : 0,	# reptile chosen,
+	"aud_choose_sc" : 0,	# scorpion chosen,
+	"aud_choose_jx" : 0,	# jax chosen,
+	"aud_continue1" : 0,	# 1 player continues n,
+	"aud_continue2" : 0,	# 2 player continues n,
+	"aud_syslock" : 0,	# system "on purpose" lockups,
+	"aud_illop" : 0,	# # of illegal opcodes,
+	"aud_1time" : 0,	# 1 player total time,
+	"aud_2time" : 0,	# 2 players total time,
+	"aud_game_starts" : 0,	# # of games started,
+	"aud_ptime" : 0,	# total play time,
+	"aud_finish" : 0,	# # of time game was finished,
+	"aud_traps" : 0,	# # of boon traps,
+	"aud_hibattle" : 0,	# highest battle # reached,
+	"aud_ontime" : 0,	# game power on time,
+	"audauto" : 0,	# auto cycle passes,
+	"aud_start" : 0,	# total starts !,
+	"aud_drone_fatal" : 0,	# drone fatality counter,
+	"aud_ws_reset" : 0,	# winning streak reset count,
+	"aud_slam" : 0,	# # of time slam switch was made,
+	"aud_bb" : 0,	# bb counter,
+	"aud_fs" : 0,	# fs counter,
+	"aud_watchdog" : 0,	# watch dog triggered!,
+	"aud_found_smoke" : 0,	# # of times smoke was found,
+	"aud_found_jade" : 0,	# # of times jade was found,
+	"aud_clue" : 0,	# clue counterr,
+	"aud_found_noob" : 0,	# # of times nooby was found,	
+}
+
+# audit counter
+var audnull = 0
+var audlcoin = 0
+var audccoin = 0
+var audrcoin = 0	# total coins in right chute,
+var aud4coin	 = 0	# total coins in fourth chute,
+var audscoin	 = 0	# total service credits,
+var audpaidc	 = 0	# total paid credits,
+var aud_choose_hh	 	= 0	# kung lao chosen,
+var aud_choose_lk	 	= 0	# kang chosen,
+var aud_choose_jc	 	= 0	# cage chosen,
+var aud_choose_sa	 	= 0	# baraka chosen,
+var aud_choose_fn1	 	= 0	# kitana chosen,
+var aud_choose_fn2	 	= 0	# mileena chosen,
+var aud_choose_st	 	= 0	# shang tsung chosen,
+var aud_choose_rd	 	= 0	# raiden chosen,
+var aud_choose_sz	 	= 0	# subzero chosen,
+var aud_choose_rp	 	= 0	# reptile chosen,
+var aud_choose_sc	 	= 0	# scorpion chosen,
+var aud_choose_jx	 	= 0	# jax chosen,
+var aud_continue1	 	= 0	# 1 player continues n,
+var aud_continue2	 	= 0	# 2 player continues n,
+var aud_syslock		 	= 0	# system "on purpose" lockups,
+var aud_illop			= 0	# # of illegal opcodes,
+var aud_1time	 		= 0	# 1 player total time,
+var aud_2time	 		= 0	# 2 players total time,
+var aud_game_starts	 	= 0	# # of games started,
+var aud_ptime	 		= 0	# total play time,
+var aud_finish			= 0	# # of time game was finished,
+var aud_traps 			= 0	# # of boon traps,
+var aud_hibattle		= 0	# highest battle # reached,
+var aud_ontime			= 0 # game power on time,
+var audauto				= 0 # auto cycle passes,
+var aud_start			= 0 # total starts !,
+var aud_drone_fatal		= 0 # drone fatality counter,
+var aud_ws_reset		= 0 # winning streak reset count,
+var aud_slam			= 0 # # of time slam switch was made,
+var aud_bb				= 0 # bb counter,
+var aud_fs				= 0 # fs counter,
+var aud_watchdog		= 0 # watch dog triggered!,
+var aud_found_smoke	 	= 0 # # of times smoke was found,
+var aud_found_jade		= 0 # # of times jade was found,
+var aud_clue			= 0 # clue counterr,
+var aud_found_noob		= 0 # # of times nooby was found,	
+
+# used in functions like clearing all audits
+var audits = [
+	audnull,
+	audlcoin,
+	audccoin,
+	audrcoin,
+	aud4coin,
+	audscoin,
+	audpaidc,
+
+	# game audits start here
+	aud_choose_hh,
+	aud_choose_lk,
+	aud_choose_jc,
+	aud_choose_sa,
+	aud_choose_fn1,
+	aud_choose_fn2,
+	aud_choose_st,
+	aud_choose_rd,
+	aud_choose_sz,
+	aud_choose_rp,
+	aud_choose_sc,
+	aud_choose_jx,
+	aud_continue1,
+	aud_continue2,
+	aud_syslock,
+	aud_illop,
+	aud_1time,
+	aud_2time,
+	aud_game_starts,
+	aud_ptime,
+	aud_finish,
+	aud_traps,
+	aud_hibattle,
+	aud_ontime,
+	audauto,
+	aud_start,
+	aud_drone_fatal,
+	aud_ws_reset,
+	aud_slam,
+	aud_bb,
+	aud_fs,
+	aud_watchdog,
+	aud_found_smoke,
+	aud_found_jade,
+	aud_clue,
+	aud_found_noob ]
+
+# these are used to give our array items context
+enum audits_enum{
+	audnull		 = 0,
+	audlcoin	 = 1,	# total coins in left chute,
+	audccoin	 = 2,	# total coins in center chute,
+	audrcoin	 = 3,	# total coins in right chute,
+	aud4coin	 = 4,	# total coins in fourth chute,
+	audscoin	 = 5,	# total service credits,
+	audpaidc	 = 6,	# total paid credits,
+	
+	# game audits start here
+	frstgaud 	 = 7,
+	aud_choose_hh	 =  7,	# kung lao chosen,
+	aud_choose_lk	 =  8,	# kang chosen,
+	aud_choose_jc	 =  9,	# cage chosen,
+	aud_choose_sa	 = 10,	# baraka chosen,
+	aud_choose_fn1	 = 11,	# kitana chosen,
+	aud_choose_fn2	 = 12,	# mileena chosen,
+	aud_choose_st	 = 13,	# shang tsung chosen,
+	aud_choose_rd	 = 14,	# raiden chosen,
+	aud_choose_sz	 = 15,	# subzero chosen,
+	aud_choose_rp	 = 16,	# reptile chosen,
+	aud_choose_sc	 = 17,	# scorpion chosen,
+	aud_choose_jx	 = 18,	# jax chosen,
+	aud_continue1	 = 19,	# 1 player continues n,
+	aud_continue2	 = 20,	# 2 player continues n,
+	aud_syslock		 = 21,	# system "on purpose" lockups,
+	aud_illop		= 22,	# # of illegal opcodes,
+	aud_1time	 	= 23,	# 1 player total time,
+	aud_2time	 	= 24,	# 2 players total time,
+	aud_game_starts	 = 	25,	# # of games started,
+	aud_ptime	 = 	26,	# total play time,
+	aud_finish	 = 	27,	# # of time game was finished,
+	aud_traps 	 = 	29,	# # of boon traps,
+	aud_hibattle	 = 	30,	# highest battle # reached,
+	aud_ontime	 = 	31,	# game power on time,
+	audauto		 =     	32,	# auto cycle passes,
+	aud_start 	 =     	33,	# total starts !,
+	aud_drone_fatal	 = 	34,	# drone fatality counter,
+	aud_ws_reset	 = 	35,	# winning streak reset count,
+	aud_slam		 = 	36,	# # of time slam switch was made,
+	aud_bb		 = 	38,	# bb counter,
+	aud_fs		 = 	39,	# fs counter,
+	aud_watchdog	 = 	40,	# watch dog triggered!,
+	aud_found_smoke	 = 	41,	# # of times smoke was found,
+	aud_found_jade	 = 	42,	# # of times jade was found,
+	aud_clue		 = 	43,	# clue counterr,
+	aud_found_noob	 = 	44,	# # of times nooby was found
+}
+
+func audit_routine_inc_value(audit : int, amount : int):
+	self.bad_aud = 0
+	audit += amount

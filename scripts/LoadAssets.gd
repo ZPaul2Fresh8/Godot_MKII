@@ -1,8 +1,8 @@
 extends Node
 
-const PROGRAM_FILE = "res://assets/mk2.program"
-const GRAPHICS_FILE = "res://assets/mk2.graphics"
-const SOUNDS_FILE = "res://assets/mk2.sounds"
+#const PROGRAM_FILE = "res://assets/mk2.program"
+#const GRAPHICS_FILE = "res://assets/mk2.graphics"
+#const SOUNDS_FILE = "res://assets/mk2.sounds"
 const GFX_HEADERS = "res://assets/gfx_headers.txt"
 
 # LOADS ASSETS FROM THE GAME AT STARTUP
@@ -15,7 +15,7 @@ func _ready():
 func CreateFiles():
 	
 	# CHECK IF PROGRAM FILE EXISTS
-	if !FileAccess.file_exists(PROGRAM_FILE):
+	if !FileAccess.file_exists(Global.PROGRAM_FILE):
 		#
 		# PROGRAM ROMS
 		#
@@ -40,13 +40,13 @@ func CreateFiles():
 			Global.program.append(uj12[x])
 		
 		# SAVE FILE
-		var file = FileAccess.open(PROGRAM_FILE, FileAccess.WRITE)
+		var file = FileAccess.open(Global.PROGRAM_FILE, FileAccess.WRITE)
 		file.store_buffer(Global.program)
 		
 		print("Program Roms successfully interleaved.")
 
 	# CHECK IF GFX FILE EXISTS
-	if !FileAccess.file_exists(GRAPHICS_FILE):
+	if !FileAccess.file_exists(Global.GRAPHICS_FILE):
 		#
 		# GRAPHIC ROMS BANK 1
 		#
@@ -173,13 +173,13 @@ func CreateFiles():
 		#print("{0} bytes".format({0:Global.graphic.size()}))
 		
 		# SAVE FILE
-		var file = FileAccess.open(GRAPHICS_FILE, FileAccess.WRITE)
+		var file = FileAccess.open(Global.GRAPHICS_FILE, FileAccess.WRITE)
 		file.store_buffer(Global.graphic)
 		
 		print("Graphic Roms succesfully interleaved.")
 
 	# CHECK IF SOUND FILE EXISTS
-	if !FileAccess.file_exists(SOUNDS_FILE):
+	if !FileAccess.file_exists(Global.SOUNDS_FILE):
 		#
 		# SOUND ROMS
 		#
@@ -236,7 +236,7 @@ func CreateFiles():
 		print("Sound Size: {0} bytes".format({0:Global.sound.size()}))
 		
 		# SAVE FILE
-		var file = FileAccess.open(SOUNDS_FILE, FileAccess.WRITE)
+		var file = FileAccess.open(Global.SOUNDS_FILE, FileAccess.WRITE)
 		file.store_buffer(Global.sound)
 		
 		print("Sound Roms successfully joined.")

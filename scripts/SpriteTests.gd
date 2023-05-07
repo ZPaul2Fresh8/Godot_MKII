@@ -1,5 +1,5 @@
 extends Node2D
-
+class_name SpriteTests
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -16,29 +16,29 @@ func _process(delta):
 func _draw():
 	pass
 
-func get_bits(header : String) -> Image:
+static func get_bits(header : String) -> PackedByteArray:
 	var image : Image
 	var line : Array = header.split("|")
-	var bitdepth : int = (header[6].hex_to_int() >> 0xc) & 7
+	var bitdepth : int = line[6].hex_to_int() >> 0xc
 	var buffer : int = 0
-	var dimensions : Vector2i = Vector2i(header[1].hex_to_int(), header[2].hex_to_int())
-	var location : int = header[5].hex_to_int()
+	var dimensions : Vector2i = Vector2i(line[1].hex_to_int(), line[2].hex_to_int())
+	var location : int = line[5].hex_to_int()
 	
 	match bitdepth:
-		3, 4, 5, 6:
+		3, 4, 5, 6, 7:
 			buffer = 96
 		_:
 			buffer = 0	
 	
 	var size : int = dimensions[0] * dimensions[1] * bitdepth + buffer
+	var gfxlocationbits = 0
 	
-	var bitoffsetstart : float = location % 8
-	var gfxstartbyte : int = location / 8
+	var bitoffsetstart : int = location % 8
 	var bitoffsetend : int = 8 - bitoffsetstart
-	var gfxendbyte : int = (location + size + gfxstartbyte + bitoffsetend) / 8
+	var gfxendbyte : int = (location + size + bitoffsetstart + bitoffsetend) / 8
 	
-	var chunk : PackedByteArray = Global.graphic.slice(gfxstartbyte, gfxendbyte)
-	var image_bytes : PackedByteArray
+	var chunk : PackedByteArray = Global.graphic.slice(location / 8, gfxendbyte)
+	var image_bytes : PackedByteArray = []
 	
 	# grab 2 bytes at a time, shift to byte align and put 1 back
 	# -2 is because we padded 2 extra bytes above to accommodate this shift process
@@ -49,7 +49,7 @@ func get_bits(header : String) -> Image:
 		var trimmedbyte = 0
 		
 		var lsb = byte1 >> bitoffsetstart
-		var msb
+		var msb = 0;
 		
 		match bitoffsetstart:
 			0:
@@ -81,8 +81,9 @@ func get_bits(header : String) -> Image:
 				msb = (byte2 & 127)
 				trimmedbyte = msb << 1 | lsb
 		image_bytes.append(trimmedbyte)
+		print(trimmedbyte)
 		counter = counter + 1
 		
 		
-	
-	return image.create_from_data(dimensions[0], dimensions[1], false, Image.FORMAT_RGBA8, chunk)
+	return image_bytes
+	#return image.create_from_data(dimensions[0], dimensions[1], false, Image.FORMAT_RGBA8, chunk)

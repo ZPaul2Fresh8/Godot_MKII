@@ -4,67 +4,65 @@ const GAME_TITLE : String = "Mortal Kombat II"
 const REVISION : String = "Revision 3.1"
 const FRAME_RATE : float = 53.20
 const WINDOW_SIZE : Vector2i = Vector2i(400, 254)
-
-var up_vel = 0xa000
-var up_grav = 0x8000
-
-var bb_fatality = 5
-var pit_fatality = 6
-var fs_fatality = 7
-var spike_fatality = 8
-
-var pong_battle_num = 250
-var close_to_edge = 68			# this constitutes being close to the edge
-var floor_ice_time = 60
-var full_strength = 0xa1
-
-var front_z = 050
-var back_z = 0x04
+const PROGRAM_FILE = "res://assets/mk2.program"
+const GRAPHICS_FILE = "res://assets/mk2.graphics"
+const SOUNDS_FILE = "res://assets/mk2.sounds"
 
 # PROCESSES
-var procs = [Process_Resource]
+var procs : Array[Process_Resource]
 
 # OBJECTS
-var objs = [Object_Resource]
+var objs : Array[Object_Resource]
+
+# PALETTE
+var pals : Array[PackedColorArray]
 
 # GLOBAL VARIABLES: 
-var program : PackedByteArray = []
-var graphic : = PackedByteArray()
-var sound : PackedByteArray = []
-var rand : int = 1		# rand,32,1
-var swstack : int	# switch stack	
-var swtemp1 : int
-var swtemp2 : int
-var swtemp3 : int
-var swtemp4 : int
+var program : PackedByteArray = FileAccess.get_file_as_bytes(PROGRAM_FILE)
+var graphic : PackedByteArray = FileAccess.get_file_as_bytes(GRAPHICS_FILE)
+var sound : PackedByteArray = FileAccess.get_file_as_bytes(SOUNDS_FILE)
 
+# NOT USED YET
+#var up_vel = 0xa000
+#var up_grav = 0x8000
+#var bb_fatality = 5
+#var pit_fatality = 6
+#var fs_fatality = 7
+#var spike_fatality = 8
+#var pong_battle_num = 250
+#var close_to_edge = 68			# this constitutes being close to the edge
+#var floor_ice_time = 60
+#var full_strength = 0xa1
+#var front_z = 050
+#var back_z = 0x04
+#var rand : int = 1		# rand,32,1
+#var swstack : int	# switch stack	
+#var swtemp1 : int
+#var swtemp2 : int
+#var swtemp3 : int
+#var swtemp4 : int
 #swstmn,256,1		# bottom of stack
 #swstst,0,1		# start switch stack
 #syscopy,16,1		# ram copy of sysctrl latch
-
 #intsync1,16,1		# full screen interrupt synchro.
 #palram,0,1		# palette allocator ram
-
 #fpalram,palrsiz*nmfpal,1	
 #bpalram,palrsiz*nmbpal,1	
 #ptrram,ptrsiz*numptr,1
-
 #nplayers,16,1		# max # of players allowed
 #irqled,16,1
 #pageaddr,32,1
-
 #
 # DISPLAY SYSTEM RAM
 #
 #start_of_dram,0,1
 #irqskye,16,1		# actual sky color (autoerase)
 #page,16,1
-var tick : int		# universal timer zeroed at round start
+#var tick : int		# universal timer zeroed at round start
 #noflip,16,1		# no page flipping needed
 #displayon,16		# do display processing when != 0
 #dlists,32,1		# display lists table
 #call_every_tick,32,1	# call this routine every tick
-
 #scrolly,32		# y scroll value
 #worldtly,32		# top left y screen coord (world)
 #scrollx8,32,1		# background #8 x scroll
@@ -76,7 +74,6 @@ var tick : int		# universal timer zeroed at round start
 #scrollx2,32,1		# background #2 x scroll
 #scrollx,32,1		# x scroll value
 #scrollx0,32,1		# background #0 x scroll
-
 #worldtlx8,32,1		# background #8 x world coord
 #worldtlx7,32,1		# background #7 x world coord
 #worldtlx6,32,1		# background #6 x world coord
@@ -86,8 +83,6 @@ var tick : int		# universal timer zeroed at round start
 #worldtlx2,32,1		# background #2 x world coord
 #worldtlx,32,1		# top left x screen coord (world)
 #worldtlx0,32,1		# background #0 x world coord
-
-
 # OBJECT LISTS
 #
 #baklst8,32,1		# background list #8
@@ -102,7 +97,6 @@ var tick : int		# universal timer zeroed at round start
 #objlst2,32,1		# object list #2
 #objlst3,32,1		# object list #3
 #last_objlst,0,1
-
 #score_area_ram,sns*30,1	# score area dma ram
 #score_ram_end,0,1		# end of it !
 #score_1st,32,1			# 1st dma entry for score area
@@ -110,7 +104,6 @@ var tick : int		# universal timer zeroed at round start
 #p2_shadadj,16,1			# player 2 shadow y adjustment !
 #clk_tens,16,1			# clock tens digit
 #clk_ones,16,1			# clock ones digit
-
 # SKEWING FLOOR RELATED RAM
 #
 #f_shadows,16,1		# flag: do shadows
@@ -124,7 +117,6 @@ var tick : int		# universal timer zeroed at round start
 #skew_calla,32,1		# skew calla
 #skew_sag,32,1		# skew ground image pointer
 #skew_scroll,32,1	# pointer to which scroller skew uses
-
 # BACKGROUND RELATED VARIABLES
 #
 #ground_y,16,1		# ground level y coordinate
@@ -132,29 +124,23 @@ var tick : int		# universal timer zeroed at round start
 #left_edge,16,1
 #right_edge,16,1		# scroll limits
 #scrtab,32,1		# scroll table
-
 #p1_ram,32*40,1		# player 1 multipart ram
 #p2_ram,32*40,1		# player 2 multipart ram
 #p1proj_ram,32*40,1  	# player 1 projectile multipart ram
 #p2proj_ram,32*40,1	# player 2 projectile multipart ram
-
 #ofree,32		# pointer to free object block
 #scrntl,32		# top left [y,x] screen (scrn coord.)
 #scrnlr,32		# lower right [y,x] screen (scrn coord.)
 #scrntl2,32		# top left [y,x] screen coord (objlst2)
 #scrnlr2,32		# lower right [y,x] screen coord (objlst2)
-
 #end_of_dram,0,1		# END OF MK DISPLAY RAM !!
-
 #************************************
 #
 #     MORTAL KOMBAT GAME SPECIFIC RAM
 #
 #************************************
-var gamestate : int		# state variable
-
+#var gamestate : int		# state variable
 #switch_escape,16,1 	#
-
 # PLAYER RAM
 #
 #p1_state,16,1		# player 1 state
@@ -169,12 +155,10 @@ var gamestate : int		# state variable
 #p1_perfect,16,1
 #p1_matchw,16,1		# player 1 wins this match
 #p1_map,32,1		# player 1 map position
-
 #p1_bcq,32*(sqs+1),1	# player 1 button close queue
 #p1_jcq,32*(sqs+1),1	# player 1 joystick close queue
 #p1_boq,32*(sqs+1),1	# player 1 button open queue
 #p1_joq,32*(sqs+1),1	# player 1 joystick open queue
-
 #p2_state,16,1		# player 2 state
 #p2_shape,32,1
 #p2_obj,32,1
@@ -187,12 +171,10 @@ var gamestate : int		# state variable
 #p2_perfect,16,1
 #p2_matchw,16,1		# player 2 wins this match
 #p2_map,32,1		# player 2 map position
-
 #p2_bcq,32*(sqs+1),1	# player 2 button close queue
 #p2_jcq,32*(sqs+1),1	# player 2 joystick close queue
 #p2_boq,32*(sqs+1),1	# player 2 button open queue
 #p2_joq,32*(sqs+1),1	# player 2 joystick open queue
-
 # GAME VARIABLES & FLAGS
 #
 #f_nosound,16,1
@@ -212,7 +194,6 @@ var gamestate : int		# state variable
 #f_fade,16,1		# flag: background is faded
 #f_no_lb,16,1		# flag: no low blow
 #f_thatsall,16,1		# flag: thats all, round iz over !
-
 #pf_ram,32,1		# printf ram
 #curback,16,1		# current background
 #diff,16,1		# current game difficulty
@@ -230,14 +211,12 @@ var gamestate : int		# state variable
 #p2_hitq,16*6,1		# player 2 hit queue
 #cmos_diff,16,1		# adjustment: drone diff
 #silhoette,16,1		# matches sans silhoette
-
 #c_three,16,1		# counter: threes
 #c_drone_kill,16,1	# count: drone kill count down
 #c_amodeloop,16,1	# counter: attract mode looper
 #c_amode_bio,16,1 	# counter: amode bio
 #f_secret,16,1
 #toasty,16,1	  	# tick state at last toasty
-
 # TIME MARKERS FOR SPECIAL EVENTS
 #
 #l_slide,32,1		# p1:p2 last tick state of slide
@@ -268,10 +247,7 @@ var gamestate : int		# state variable
 #f_death2,16,1		# flag: death blow achieved
 #f_pit_fall,16,1		# flag
 #c_1p_tries,16,1		# counter: 1 player tries
-
-
 # range clear the "l_" variables (ejbpatch)
-
 # DEBUG RAM
 #
 #counter_copy,16		# current copy of the coin counter latch
@@ -286,10 +262,8 @@ var gamestate : int		# state variable
 #debug4,32,1		# debug ram #4 (for tests)
 #debug5,32,1		# debug ram #5 (for tests)
 #debug6,32,1		# debug ram #6 (for tests)
-
 #f_sans_throws,16,1
 #f_show_ranking,16,1	# flag: showing rankings
-
 ##########################################################################
 #											     *
 #  a6 = control:offset									     *
@@ -300,12 +274,10 @@ var gamestate : int		# state variable
 #  a1 = scale										     *
 #											     *
 ##########################################################################
-
 #p1_knotch1	.set	score_ram_end-(32*3)
 #p1_knotch2	.set	p1_knotch1-sns
 #p2_knotch1	.set	p1_knotch2-sns
 #p2_knotch2	.set	p2_knotch1-sns
-
 #entry_1		.set	score_ram_end-(sns*1)
 #entry_2		.set	score_ram_end-(sns*2)
 #entry_3		.set	score_ram_end-(sns*3)
@@ -316,7 +288,6 @@ var gamestate : int		# state variable
 #entry_8		.set	score_ram_end-(sns*8)
 #entry_9		.set	score_ram_end-(sns*9)
 #entry_10		.set	score_ram_end-(sns*10)
-
 #entry_13		.set	score_ram_end-(sns*13)
 #entry_14		.set	score_ram_end-(sns*14)
 #entry_15		.set	score_ram_end-(sns*15)
@@ -325,9 +296,6 @@ var gamestate : int		# state variable
 #entry_18		.set	score_ram_end-(sns*18)
 #entry_19		.set	score_ram_end-(sns*19)
 #entry_20		.set	score_ram_end-(sns*20)
-
-
 #p1_bar_view	.set	(entry_9+(32*3))
 #p2_bar_view	.set	(entry_10+(32*3))
 #p2_bar_xpos	.set	(entry_10+(32*2))
-

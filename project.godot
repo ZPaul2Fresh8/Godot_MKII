@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 
 Global="*res://Global.gd"
 LoadAssets="*res://scripts/LoadAssets.gd"
+Tools="*res://scripts/Tools.gd"
+Bookmarks="*res://scripts/extract/Bookmarks.gd"
 
 [display]
 
