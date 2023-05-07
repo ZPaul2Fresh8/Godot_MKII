@@ -24,8 +24,8 @@ func _ready():
 	
 	# testing area
 	#var line : String = "0x646ec|0x37|0x46|0000|0000|0x0403ecc4|0x7000"
-	#show_test_img()
-	Extract.Fonts()
+	Debug_Test()
+	
 	
 	
 	
@@ -59,7 +59,7 @@ func _on_ok_button_pressed():
 	$NoticePanel/Notice.text="Finished extracting assets."
 	$NoticePanel/Notice/OK_Button.disabled = false
 	$NoticePanel/Notice/OK_Button.text = "OK"
-	$NoticePanel/Notice/OK_Button.pressed.connect(show_test_img)
+	$NoticePanel/Notice/OK_Button.pressed.connect(Debug_Test)
 
 
 func _notification(what):
@@ -67,20 +67,26 @@ func _notification(what):
 		get_tree().quit()
 
 
-func show_test_img():
-	# check for test menu
-	get_tree().change_scene_to_file("res://scenes/Attract.tscn")
+func Debug_Test():
+	# change to debug scene
+	get_tree().change_scene_to_file("res://scenes/debug.tscn")
 	
-	var data : PackedByteArray = Global.graphic.slice(0x807D98, 0x807D98 + (0x37*0x46*7) + 4)
-	var pal : PackedColorArray = Tools.Convert_Palette(0x5dab0)
-	var image : Image = Tools.Draw_Image(0x37, 0x46, pal, 7, data, 4)
+	#Extract.Fonts()
 	
-	var texture = ImageTexture.new()
-	texture.create_from_image(image)
+	#0x64692 - Raiden Works
+	#0x4f41a - Palette Array Index error
+	var image = Tools.Draw_Image(0x4f41a)
 	
-	var sprite = Sprite2D.new()
-	sprite.texture = texture
-	add_child(sprite)
+	# Save image
+	var name : String = str("%05X" % image.get_meta("Header")[0])
+	image.save_png("res://assets/images/" + name + ".png")
+
+	#var texture = ImageTexture.new()
+	#texture.create_from_image(image)
+	
+	#var sprite = Sprite2D.new()
+	#sprite.texture = texture
+	#add_child(sprite)
 
 
 func _on_find_gfxbtn_pressed():

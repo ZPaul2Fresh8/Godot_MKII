@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3523f3oxkk8d"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_20ojh"]
+
+[node name="Debug" type="Node2D"]
+
+[node name="Panel" type="Panel" parent="."]
+offset_right = 400.0
+offset_bottom = 255.0
+
+[node name="MySprite2D" type="Sprite2D" parent="Panel"]
+texture_filter = 1
+position = Vector2(200, 125)
+texture = SubResource("ImageTexture_20ojh")
