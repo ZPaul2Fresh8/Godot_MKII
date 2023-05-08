@@ -14,5 +14,9 @@ static func Fonts():
 		var image = Tools.Draw_Blitter(header)
 		#var image = Tools.Draw_Image(width, height, palette, 1, bytes, 0)
 		
+		# 45 = M
 		chars_processed += 1
-		image.save_png("E:\\Game Engines\\Godot_v4.0.2-stable_mono_win64\\Projects\\Godot_MKII\\assets\\fonts\\" + str(chars_processed) + ".png")
+		if image != null:
+			image.save_png("res://assets/fonts/" + str(chars_processed) + ".png")
+		# MAME Breakpoint For String Display at the startup:
+		# FFA59580

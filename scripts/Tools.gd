@@ -29,30 +29,37 @@ func Draw_Blitter(header : int) -> Image:		# DRAWS BLITTER SPRITES
 	var width = Tools.Get_Word(header)
 	var height = Tools.Get_Word(header+2)
 	var data_ptr = Tools.Get_Pointer(header+4)
-	
 	var byte_width = 1
-	var byte_size = 1
 	
 	# calc char byte size
 	if width > 8:
 		byte_width = 2
 		width = 16
-	byte_size = byte_width * height
+	else:
+		width = 8
 	
 	# GET DATA CHUNK
-	var data : PackedByteArray = Global.program.slice(data_ptr, data_ptr+byte_size)
+	var data : PackedByteArray = Global.program.slice(data_ptr, data_ptr + (byte_width * height))
+	
+	# REARRANGE BYTES BACK TO BIG ENDIAN
+	var temp_data : PackedByteArray
+	for i in range (0, data.size(), 2):
+		temp_data.append(data[i+1])
+		temp_data.append(data[i])	
+	data = temp_data
 	
 	# RED PALETTE
-	var red = Color8(255, 0, 0, 255)
-	var trans = Color8(0, 0, 0, 0)   
-	var palette : PackedColorArray
-	palette.append(trans)
-	palette.append(red)
+	var palette : PackedColorArray = [Color8(0, 0, 0, 0), (Color8(255, 0, 0, 255))]
 	
 	# CREATE BIT ARRAY
-	var bits = _Bits_To_Bytes(data)
-	var image = _Fill_Pixels(width, height, bits, palette, 1)
-	
+	var bits : PackedByteArray = _Bits_To_Bytes(data)
+
+	# CREATE IMAGE
+	var image = Image.create(width, height, false, Image.FORMAT_RGBA8)	
+	for y in range(height):
+		for x in range(width):
+			image.set_pixel(x, y, palette[bits[0]])
+			bits = bits.slice(1)
 	return image
 
 func Draw_Image(location: int) -> Image:		# DRAWS TYPICAL SPRITES
@@ -161,7 +168,7 @@ func convert555To888(color_555 : int) -> Color:
 	return Color8(red, green, blue, 255)
 
 func _Bits_To_Bytes (data : PackedByteArray) -> PackedByteArray:
-	# USING FOR FONTS
+	# USING FOR TYPICAL SPRITES
 	var bits : PackedByteArray
 	for w in range(data.size()):
 		var byte = data[w]
