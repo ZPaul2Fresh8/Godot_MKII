@@ -73,9 +73,12 @@ func Debug_Test():
 	
 	#Extract.Fonts()
 	
-	#0x64692 - Raiden Works
-	#0x4f41a - Palette Array Index error
-	var image = Tools.Draw_Image(0x4f41a)
+	var image = Tools.Draw_Image(0x4f408) #  - 
+	#var image = Tools.Draw_Image(0x658d6) #  - copyright 1-bit
+	#var image = Tools.Draw_Image(0x4f1b4) #  - lifebar
+	#var image = Tools.Draw_Image(0x64692) # - Raiden Works
+	#var image = Tools.Draw_Image(0x4f41a) # - VS - Compression
+	#var image = Tools.Draw_Image(0x4f38a) # - Kung Lao Name Plate 4000 - Colors Wrong (No Pal)
 	
 	# Save image
 	var name : String = str("%05X" % image.get_meta("Header")[0])

@@ -55,7 +55,7 @@ func Draw_Blitter(header : int) -> Image:		# DRAWS BLITTER SPRITES
 	
 	return image
 
-func Draw_Image(location: int): 				# DRAWS TYPICAL SPRITES
+func Draw_Image(location: int) -> Image:		# DRAWS TYPICAL SPRITES
 	# GET IMAGE HEADER
 	# 0: header location in rom
 	# 1: width
@@ -83,7 +83,7 @@ func Draw_Image(location: int): 				# DRAWS TYPICAL SPRITES
 	bits = bits.slice(header[5] % 8)
 	
 	# CREATE IMAGE
-	var image = _Fill_Pixels(header[1], header[2], bits, palette, bpp)
+	var image = _Fill_Pixels(header[1], header[2], bits, palette, header[6])
 
 	# SET META FOR FUTURE REFS
 	image.set_meta("Header", header)
@@ -95,39 +95,39 @@ func Build_Header(location : int) -> Array:
 	# HEADER STRUCT
 	# 0 - add location - for naming/ref purposes
 	header.append(location)
-	print("%05X" % header[0])
+	#print("%05X" % header[0])
 	
 	# 1 - width
 	header.append(Tools.Get_Word(location))
-	print("%04X" % header[1])
+	#print("%04X" % header[1])
 	
 	# 2 - height
 	header.append(Tools.Get_Word(location+2))
-	print("%04X" % header[2])
+	#print("%04X" % header[2])
 	
 	# 3 - offset x
 	header.append(Tools.Get_Word(location+4))
-	print("%04X" % header[3])
+	#print("%04X" % header[3])
 	
 	# 4 - offset y
 	header.append(Tools.Get_Word(location+6))
-	print("%04X" % header[4])
+	#print("%04X" % header[4])
 	
 	# 5 - graphic location
 	header.append(Tools.Get_Long(location+8))
-	print("%08X" % header[5])
+	#print("%08X" % header[5])
 	
 	# 6 - draw attribute
 	header.append(Tools.Get_Word(location+12))
-	print("%04X" % header[6])
+	#print("%04X" % header[6])
 	
 	# 7 - palette pointer
 	header.append(Tools.Get_Long(location+14))
-	print("%08X" % header[7])
+	#print("%08X" % header[7])
 	
 	return header
 
-func convertBitsToByte(bits):
+func convertBitsToByte(bits : PackedByteArray):
 	var byte_value = 0
 	for i in range(bits.size()):
 		#byte_value = (byte_value << 1) | bits[i]
@@ -140,6 +140,9 @@ func Convert_Palette(location : int) -> PackedColorArray:
 	var slice = Global.program.slice(location+2, location+2+size)
 	
 	for c in range(0, slice.size() * 2, 2):
+		if c == 0:
+			palette.append(Color.TRANSPARENT)
+			continue
 		var word : int = Tools.Get_Word(location + 2 + c)
 		var color = convert555To888(word)
 		palette.append(color)
@@ -158,7 +161,7 @@ func convert555To888(color_555 : int) -> Color:
 	return Color8(red, green, blue, 255)
 
 func _Bits_To_Bytes (data : PackedByteArray) -> PackedByteArray:
-	# CREATE BIT ARRAY
+	# USING FOR FONTS
 	var bits : PackedByteArray
 	for w in range(data.size()):
 		var byte = data[w]
@@ -166,17 +169,110 @@ func _Bits_To_Bytes (data : PackedByteArray) -> PackedByteArray:
 			var bit = (byte >> b) & 1
 			bits.append(bit)
 	return bits
+	
+func _Bits_To_Byte (bits : PackedByteArray) -> int:
+	var new_byte : int = 0
+	#bits.reverse()
+	for w in range(bits.size()):
+		if bits[w]:
+			new_byte |= (1 << w)
+	return new_byte
 
-func _Fill_Pixels(width:int, height:int, bits:PackedByteArray, palette:PackedColorArray, bpp : int) -> Image:
+func _Fill_Pixels(width:int, height:int, bits:PackedByteArray, palette:PackedColorArray, draw_att : int) -> Image:
+	# DRAW ATTTRIBUTE BITS
+	# FEDC BA98 7654 3210
+	# |___________________ DMA GO / DMA HALT
+	#  |__________________ BIT DEPTH
+	#   |_________________ BIT DEPTH
+	#    |________________ BIT DEPTH
+	#
+	#      |______________ DMA COMPRESS TRAIL PIX MULTIPLIER BIT 1
+	#       |_____________ DMA COMPRESS TRAIL PIX MULTIPLIER BIT 0
+	#        |____________ DMA COMPRESS LEAD  PIX MULTIPLIER BIT 1
+	#         |___________ DMA COMPRESS LEAD  PIX MULTIPLIER BIT 0
+	#
+	#           |_________ COMPRESSION ENABLED
+	#            |________ DMA CLIP ON = 1 (USING U,D,L,R METHOD)
+	#             |_______ FLAG - Y DRAW START (0=TOP; 1=BOTTOM) - PBV - VFL
+	#              |______ FLAG - X DRAW START (0=LEFT; 1=RIGHT) - PBH - HFL
+	#
+	#                |____ PIXEL CONSTANT/SUBSTITUTION OPS - NOT USED IN MK (blit nonzero pixels as color)
+	#                 |___ PIXEL CONSTANT/SUBSTITUTION OPS - NOT USED IN MK (blit zero pixel as color)
+	#                  |__ PIXEL CONSTANT/SUBSTITUTION OPS - NOT USED IN MK (blit nonzero pixels)
+	#                   |_ PIXEL CONSTANT/SUBSTITUTION OPS - NOT USED IN MK (blit zero pixels)
+	
 	# CREATE IMAGE
 	var image = Image.create(width, height, false, Image.FORMAT_RGBA8)
+	var bpp : int = draw_att >> 0xc
 	var pixel : int = 0
+	
 	for y in range(height):
+		# CHECK FOR MULTIPLYING OF COMPRESSED 0-PIXELS
+		# 11   10   09   08  ->   BIT
+		# TM1  TM0  LM1  LM0       MULTIPLIER
+		# -----------------------------------
+		# X    X    0    0       X 1 TO LEADING PIXELS
+		# X    X    0    1       X 2 TO LEADING PIXELS
+		# X    X    1    0       X 4 TO LEADING PIXELS
+		# X    X    1    1       X 8 TO LEADING PIXELS
+		# 0    0    X    X       X 1 TO TRAILING PIXELS
+		# 0    1    X    X       X 2 TO TRAILING PIXELS
+		# 1    0    X    X       X 4 TO TRAILING PIXELS
+		# 1    1    X    X       X 8 TO TRAILING PIXELS
+		
+		var cmp_leading : int = 0
+		var cmp_trailing : int = 0
+		if _Is_Sprite_Compressed(draw_att):
+			
+			# get compression byte
+			var cmp_byte : int = _Bits_To_Byte(PackedByteArray(bits.slice(0, 8)))
+			# trim off compression byte
+			bits = bits.slice(8)
+			
+			cmp_leading = cmp_byte & 0xf
+			cmp_trailing = cmp_byte >> 4
+			
+			# leading blank pixel multiplication
+			if (_Is_Bit_Set(draw_att, 8)):
+				if (_Is_Bit_Set(draw_att, 9)):
+					cmp_leading = cmp_leading * 8
+				else:
+					cmp_leading = cmp_leading * 2
+			elif (_Is_Bit_Set(draw_att, 9)):
+				cmp_leading = cmp_leading * 4
+			
+			# trailing blank pixel multiplication
+			if (_Is_Bit_Set(draw_att, 10)):
+				if(_Is_Bit_Set(draw_att, 11)):
+					cmp_trailing = cmp_trailing * 8
+				else:
+					cmp_trailing = cmp_trailing * 2
+			elif (_Is_Bit_Set(draw_att, 11)):
+				cmp_trailing = cmp_trailing * 4
+
 		for x in range(width):
-			var slice : PackedByteArray = bits.slice(pixel * bpp, pixel * bpp + bpp)
-			var index : int = convertBitsToByte(slice)			
-			print(index)
-			image.set_pixel(x, y, palette[index])
+			var slice : PackedByteArray = bits.slice(0, bpp)
+			var index : int = convertBitsToByte(slice)
+			
+			if (x < cmp_leading or x >= (width - cmp_trailing)):
+				
+				# DEBUG - show compressed pixels
+				image.set_pixel(x, y, Color8(0, 255, 0, 255))
+				index = 0
+				continue
+			else:
+				# only remove pixel data if not compressed 
+				bits = bits.slice(bpp)
+				
+			if index < palette.size():
+				image.set_pixel(x, y, palette[index])
+			
 			pixel += 1
-			print("Pixel: " + str(pixel) + " | Color Index: " + str(index))
+			#print("Pixel: " + str("%04d" % pixel) + " | Color Index: " + str(index))
 	return image
+
+func _Is_Sprite_Compressed(draw_att : int) -> bool:
+	return (draw_att & 0x80) >> 7 == 1
+
+func _Is_Bit_Set(value : int, bit : int) -> bool:
+	return ((value & (1 << bit)) != 0)
