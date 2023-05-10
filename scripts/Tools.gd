@@ -1,5 +1,8 @@
 extends Node
 
+# PALETTE FOR REUSE ON ANIMATION EXTRACTS
+var palette : PackedColorArray
+
 func Get_Pointer(rom_loc : int) -> int:
 	# returns a rom location pointer from a 4-byte
 	# game address located at provided rom location
@@ -62,7 +65,7 @@ func Draw_Blitter(header : int) -> Image:		# DRAWS BLITTER SPRITES
 			bits = bits.slice(1)
 	return image
 
-func Draw_Image(location: int) -> Image:		# DRAWS TYPICAL SPRITES
+func Draw_Image(location: int, new_palette: bool) -> Image:		# DRAWS TYPICAL SPRITES
 	# GET IMAGE HEADER
 	# 0: header location in rom
 	# 1: width
@@ -81,7 +84,8 @@ func Draw_Image(location: int) -> Image:		# DRAWS TYPICAL SPRITES
 	var data : PackedByteArray = Global.graphic.slice(gfx_start, gfx_end)
 	
 	# CREATE PALETTE
-	var palette : PackedColorArray = Tools.Convert_Palette((header[7] / 8) & 0xfffff)
+	if new_palette == true:
+		palette = Tools.Convert_Palette((header[7] / 8) & 0xfffff)
 
 	# CREATE BIT ARRAY
 	var bits = _Bits_To_Bytes(data)
@@ -264,7 +268,7 @@ func _Fill_Pixels(width:int, height:int, bits:PackedByteArray, palette:PackedCol
 			if (x < cmp_leading or x >= (width - cmp_trailing)):
 				
 				# DEBUG - show compressed pixels
-				image.set_pixel(x, y, Color8(0, 255, 0, 255))
+				# image.set_pixel(x, y, Color8(0, 255, 0, 255))
 				index = 0
 				continue
 			else:

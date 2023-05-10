@@ -26,10 +26,7 @@ func _ready():
 	#var line : String = "0x646ec|0x37|0x46|0000|0000|0x0403ecc4|0x7000"
 	Debug_Test()
 	
-	
-	
-	
-	
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -71,26 +68,13 @@ func Debug_Test():
 	# change to debug scene
 	get_tree().change_scene_to_file("res://scenes/debug.tscn")
 	
-	Extract.Fonts()
+	# Extract.Fonts()
+	Extract.Animations()
 	
-	#var image = Tools.Draw_Image(0x4f408) #  - 
-	#var image = Tools.Draw_Image(0x658d6) #  - copyright 1-bit
+	#var image = Tools.Draw_Image(0x658d6, true) #  - copyright 1-bit
 	#var image = Tools.Draw_Image(0x4f1b4) #  - lifebar
 	#var image = Tools.Draw_Image(0x64692) # - Raiden Works
 	#var image = Tools.Draw_Image(0x4f41a) # - VS - Compression
-	#var image = Tools.Draw_Image(0x4f38a) # - Kung Lao Name Plate 4000 - Colors Wrong (No Pal)
-	
-	# Save image
-	#var name : String = str("%05X" % image.get_meta("Header")[0])
-	#image.save_png("res://assets/images/" + name + ".png")
-
-	#var texture = ImageTexture.new()
-	#texture.create_from_image(image)
-	
-	#var sprite = Sprite2D.new()
-	#sprite.texture = texture
-	#add_child(sprite)
-
 
 func _on_find_gfxbtn_pressed():
 	#var thread = Thread.new()
