@@ -2,6 +2,33 @@ extends Node
 
 # PALETTE FOR REUSE ON ANIMATION EXTRACTS
 var palette : PackedColorArray
+#var fpalette : PackedColorArray
+
+func Is_Frame_MultiSegmented(rom_loc : int) -> bool:
+	# checks to see if whether the 1st frame in the animation frame
+	# array points to a frame segment(true) or to a complete frame(false)
+	# expected rom_loc value is animation frame array.
+	
+	var pointer : int = Get_Pointer(rom_loc)
+	
+	# build long
+	var word1 = Global.program.decode_u8(pointer) << 8 | Global.program.decode_u8(pointer+1)
+	var word2 = Global.program.decode_u8(pointer+2) << 8 | Global.program.decode_u8(pointer+3)
+	var long = word2 << 16 | word1
+	
+	# check long
+	if long < 0xff800000:
+		return false
+	elif long & 0xf != 0:
+		return false
+	else:
+		return true
+
+func Is_Valid_Palette(game_loc : int) -> bool:
+	# easy palette validation check, pulls 
+	var pal_size : int = Get_Word(game_loc)
+	if pal_size > 0xff: return false
+	else: return true
 
 func Get_Pointer(rom_loc : int) -> int:
 	# returns a rom location pointer from a 4-byte
@@ -15,7 +42,13 @@ func Get_Word(rom_loc : int) -> int:
 	if rom_loc > 0xfffff:
 		rom_loc = (rom_loc / 8) & 0xfffff
 	
-	return Global.program.decode_u8(rom_loc) << 8 | Global.program.decode_u8(rom_loc+1)
+	var value = Global.program.decode_u8(rom_loc) << 8 | Global.program.decode_u8(rom_loc+1)
+	
+	if value > 0x7fff:
+		# turn into negative
+		value = value - 0x10000
+	
+	return value
 
 func Get_Long(rom_loc : int) -> int:
 	# returns a long value from provided rom location
@@ -65,7 +98,7 @@ func Draw_Blitter(header : int) -> Image:		# DRAWS BLITTER SPRITES
 			bits = bits.slice(1)
 	return image
 
-func Draw_Image(location: int, new_palette: bool) -> Image:		# DRAWS TYPICAL SPRITES
+func Draw_Image(location:int, create_palette:bool) -> Image:		# DRAWS TYPICAL SPRITES
 	# GET IMAGE HEADER
 	# 0: header location in rom
 	# 1: width
@@ -77,6 +110,14 @@ func Draw_Image(location: int, new_palette: bool) -> Image:		# DRAWS TYPICAL SPR
 	# 7: palette (game address)
 	var header : Array = Build_Header(location)
 
+	if header[1] > 0xff || header[2] > 0xff:
+		print("Header at " + str(location) + " dimensions exceeded logical expectations.")
+		return null
+	
+	if header[1] <= 0 || header[2] <= 0:
+		print("Header at " + str(location) + " dimensions didn't meet logical expectations.")
+		return null
+	
 	# GET DATA CHUNK
 	var bpp : int = header[6] >> 0xc
 	var gfx_start : int = (header[5] - (header[5] % 8)) / 8
@@ -84,8 +125,11 @@ func Draw_Image(location: int, new_palette: bool) -> Image:		# DRAWS TYPICAL SPR
 	var data : PackedByteArray = Global.graphic.slice(gfx_start, gfx_end)
 	
 	# CREATE PALETTE
-	if new_palette == true:
-		palette = Tools.Convert_Palette((header[7] / 8) & 0xfffff)
+	if !create_palette:
+		if Is_Valid_Palette(header[7]):
+			palette = Tools.Convert_Palette((header[7] / 8) & 0xfffff)
+		else:
+			print(str(location) + ": Abort palette creation request. Palette returned as invalid")
 
 	# CREATE BIT ARRAY
 	var bits = _Bits_To_Bytes(data)

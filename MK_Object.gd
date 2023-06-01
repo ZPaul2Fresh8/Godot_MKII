@@ -1,6 +1,10 @@
-extends Resource
 #extends Sprite2D
-class_name Object_Resource
+extends AnimatedSprite2D
+class_name MK_Object
+
+# debug options
+@export_category("Debug")
+@export var Print_Location : bool
 
 # OBJECT STRUCTURE
 var olink						# 0x000 - link to next object in pool (not used, now in Global Array)
@@ -13,7 +17,7 @@ var ozval : int					# 0x0c0 - z index
 var ofset						# 0x0e0 - bits 16-31 precomputed offset
 var oflags						# 0x0f0 - bits 0-5 dma control
 var osag						# 0x100 - sprite data address
-var osizex = self.texture.get_width()						# 0x120 - x size
+var osizex						# 0x120 - x size
 var osizey						# 0x130 - y size
 var opal						# 0x140 - palette index
 
@@ -31,3 +35,14 @@ var oid : int					# 0x1c0 - object id
 var oshape						# 0x1d0 - multipart "ani shape"
 var ochar : int					# 0x1f0 - char id
 
+func _init():
+	# add obj to pool
+	Global.objs.append(self)
+
+func _process(delta):
+	if Print_Location:
+		print(self.get_transform().origin)
+
+func Move_Object(X : int, Y : int):
+	self.move_local_x(X)
+	self.move_local_y(Y)

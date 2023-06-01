@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://MK_Object.gd" id="1_sewx6"]
+
+[node name="MK_Object" type="Sprite2D"]
+centered = false
+flip_h = true
+flip_v = true
+script = ExtResource("1_sewx6")

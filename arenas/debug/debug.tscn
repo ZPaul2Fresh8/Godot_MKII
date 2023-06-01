@@ -1,0 +1,109 @@
+[gd_scene load_steps=5 format=3 uid="uid://dxwvocb0qni0u"]
+
+[ext_resource type="Script" path="res://arenas/debug/debug.gd" id="1_tvq0n"]
+[ext_resource type="Texture2D" uid="uid://c7prgj3owcf13" path="res://assets/pixelgrid.png" id="2_1teh7"]
+[ext_resource type="Texture2D" uid="uid://7mbo4iwij0iq" path="res://icon.svg" id="2_pc871"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0rp12"]
+
+[node name="Debug" type="Node2D"]
+script = ExtResource("1_tvq0n")
+Name = "Debug Arena"
+Left_Boundary = -200
+Right_Boundary = 200
+Ground = 20
+
+[node name="Ruler" type="Sprite2D" parent="."]
+modulate = Color(0.462745, 0.462745, 0.462745, 1)
+texture = ExtResource("2_1teh7")
+offset = Vector2(498, 488)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(200, 100)
+texture = ExtResource("2_pc871")
+
+[node name="DebugLabel" type="RichTextLabel" parent="."]
+offset_left = 5.0
+offset_right = 105.0
+offset_bottom = 25.0
+text = "Debug Area"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+limit_left = -500
+limit_top = -300
+limit_right = 899
+limit_bottom = 554
+editor_draw_limits = true
+
+[node name="ParallaxBackground0" type="ParallaxBackground" parent="Camera2D"]
+scroll_offset = Vector2(50, 0)
+scroll_base_offset = Vector2(50, 0)
+scroll_base_scale = Vector2(2, 2)
+scroll_limit_begin = Vector2(10, 0)
+scroll_limit_end = Vector2(100, 0)
+
+[node name="ParallaxBackground1" type="ParallaxBackground" parent="Camera2D"]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Camera2D/ParallaxBackground1"]
+texture = ExtResource("2_pc871")
+offset = Vector2(200, 127)
+
+[node name="ParallaxBackground2" type="ParallaxBackground" parent="Camera2D"]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Camera2D/ParallaxBackground2"]
+texture = ExtResource("2_pc871")
+offset = Vector2(200, 127)
+
+[node name="ParallaxBackground3" type="ParallaxBackground" parent="Camera2D"]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Camera2D/ParallaxBackground3"]
+texture = ExtResource("2_pc871")
+offset = Vector2(200, 127)
+
+[node name="ParallaxBackground4" type="ParallaxBackground" parent="Camera2D"]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Camera2D/ParallaxBackground4"]
+texture = ExtResource("2_pc871")
+offset = Vector2(200, 127)
+
+[node name="ParallaxBackground5" type="ParallaxBackground" parent="Camera2D"]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Camera2D/ParallaxBackground5"]
+texture = ExtResource("2_pc871")
+offset = Vector2(200, 127)
+
+[node name="ParallaxBackground6" type="ParallaxBackground" parent="Camera2D"]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Camera2D/ParallaxBackground6"]
+texture = ExtResource("2_pc871")
+offset = Vector2(200, 127)
+
+[node name="ParallaxBackground7" type="ParallaxBackground" parent="Camera2D"]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Camera2D/ParallaxBackground7"]
+modulate = Color(0.462745, 0.462745, 0.462745, 1)
+texture = ExtResource("2_1teh7")
+offset = Vector2(200, 640)
+
+[node name="Layer_6" type="Panel" parent="."]
+offset_right = 400.0
+offset_bottom = 254.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0rp12")
+
+[node name="Layer_7" type="Panel" parent="."]
+offset_right = 400.0
+offset_bottom = 254.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0rp12")
+
+[node name="Layer_8" type="Panel" parent="."]
+offset_right = 400.0
+offset_bottom = 254.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0rp12")

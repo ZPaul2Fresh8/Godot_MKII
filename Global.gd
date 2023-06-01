@@ -3,16 +3,38 @@ extends Node
 const GAME_TITLE : String = "Mortal Kombat II"
 const REVISION : String = "Revision 3.1"
 const FRAME_RATE : float = 53.20
+const TICK_TIME : float = 1000 / FRAME_RATE # ~18.79ms per game tick
 const WINDOW_SIZE : Vector2i = Vector2i(400, 254)
 const PROGRAM_FILE = "res://assets/mk2.program"
 const GRAPHICS_FILE = "res://assets/mk2.graphics"
 const SOUNDS_FILE = "res://assets/mk2.sounds"
 
+var Fighter_Resource_Paths : Array[String] = [
+	"res://fighters/0_Kung_Lao.tres",
+	"res://fighters/1_Liu_Kang.tres",
+	"res://fighters/2_Cage.tres",
+	"res://fighters/3_Baraka.tres",
+	"res://fighters/4_Kitana.tres",
+	"res://fighters/5_Mileena.tres",
+	"res://fighters/6_Shang.tres",
+	"res://fighters/7_Raiden.tres",
+	"res://fighters/8_SubZero.tres",
+	"res://fighters/9_Reptile.tres",
+	"res://fighters/10_Scorpion.tres",
+	"res://fighters/11_Jax.tres",
+	"res://fighters/12_Kintaro.tres",
+	"res://fighters/13_Kahn.tres",
+	"res://fighters/14_Smoke.tres",
+	"res://fighters/15_Noob.tres",
+	"res://fighters/16_Jade.tres"]
+
+var Image_Path = "res://assets/images/"
+
 # PROCESSES
-var procs : Array[Process_Resource]
+var procs : Array[MK_Process]
 
 # OBJECTS
-var objs : Array[Object_Resource]
+var objs : Array[MK_Object]
 
 # PALETTE
 var pals : Array[PackedColorArray]
@@ -21,6 +43,10 @@ var pals : Array[PackedColorArray]
 var program : PackedByteArray = FileAccess.get_file_as_bytes(PROGRAM_FILE)
 var graphic : PackedByteArray = FileAccess.get_file_as_bytes(GRAPHICS_FILE)
 var sound : PackedByteArray = FileAccess.get_file_as_bytes(SOUNDS_FILE)
+
+# PLAYER OBJECTS
+var Controllers : Array [MK_Process]
+var Fighters : Array [Fighter]
 
 # NOT USED YET
 #var up_vel = 0xa000
@@ -119,7 +145,7 @@ var sound : PackedByteArray = FileAccess.get_file_as_bytes(SOUNDS_FILE)
 #skew_scroll,32,1	# pointer to which scroller skew uses
 # BACKGROUND RELATED VARIABLES
 #
-#ground_y,16,1		# ground level y coordinate
+var ground_y : int			# ground level y coordinate
 #ceiling_y,16,1		# ceiling level y coordinate
 #left_edge,16,1
 #right_edge,16,1		# scroll limits
@@ -182,6 +208,7 @@ var sound : PackedByteArray = FileAccess.get_file_as_bytes(SOUNDS_FILE)
 #f_doscore,16,1		# flag: display score/bars/timer
 #f_death,16,1		# flag: death blow achieved
 #f_norepell,16,1		# flag: don't repell players
+var f_start : bool = false
 #f_start,16,1		# flag: start a fightin'
 #f_auto_erase,16,1	# flag: do auto erase
 #f_novel,16,1		# flag: no velocities

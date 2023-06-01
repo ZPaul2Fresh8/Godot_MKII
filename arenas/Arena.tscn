@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://ctb3j1iqf4qhh"]
+
+[ext_resource type="Script" path="res://arenas/Arena.gd" id="1_ak6oq"]
+
+[node name="Arena" type="Node"]
+script = ExtResource("1_ak6oq")
+
+[node name="Layer_A" type="Panel" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0

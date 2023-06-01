@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="Fighter_Resource" load_steps=2 format=3 uid="uid://c88tpp4lsnflx"]
+
+[ext_resource type="Script" path="res://fighters/Fighter_Resource.gd" id="1_runyp"]
+
+[resource]
+script = ExtResource("1_runyp")
+Name = 2
+DisplayName = "CAGE"
+Index = 2
+BioStory = ""
+EndStory1 = ""
+EndStory2 = ""
+Primary_Colors = Array[Color]([])
+Secondary_Colors = Array[Color]([])
+Fatality_Colors = Array[Color]([])
+Frozen_Colors = Array[Color]([])
+Ground_Offset = 140
+Shadow_Adjustment = 0
+Animation_Path = "res://assets/images/fighters/CAGE/"
+Basic_Animations = Array[Animation]([])
+Special_Animations = Array[Animation]([])
+Stance_Anim_Speed = 5
+Walk_Anim_Speed = 0
+Walk_BWD_Anim_Speed = 0
+Turn_Around_Speed = 0
+Walk_Velocity = 0
+Walk_BWD_Velocity = 0
+Damage_Reduction = 0
+unxlate = 0
+M1_Name = ""
+M1_Input_Speed = 0
+M1_Input_1 = 0
+M1_Input_2 = 0
+M1_Input_3 = 0
+M1_Input_4 = 0
+F1_Name = ""
+F1_Input_Speed = 0
+F1_Input_1 = 0
+F1_Input_2 = 0
+F1_Input_3 = 0
+F1_Input_4 = 0

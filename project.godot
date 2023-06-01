@@ -28,6 +28,8 @@ Equate_AL="*res://Equates.gd"
 
 window/size/viewport_width=400
 window/size/viewport_height=254
+window/size/initial_position_type=0
+window/size/initial_position=Vector2i(4000, 0)
 window/size/resizable=false
 
 [dotnet]
@@ -71,7 +73,12 @@ right={
 2d_render/layer_10="Object List 2"
 2d_render/layer_11="Object List 3"
 
+[physics]
+
+common/physics_ticks_per_second=53
+
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 2d/snap/snap_2d_transforms_to_pixel=true
 2d/snap/snap_2d_vertices_to_pixel=true
