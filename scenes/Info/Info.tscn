@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://bjvqaooo2ige4"]
+
+[ext_resource type="Script" path="res://scenes/Info/Info.gd" id="1_7ffiy"]
+
+[node name="Info" type="Window"]
+size = Vector2i(400, 800)
+script = ExtResource("1_7ffiy")
+
+[node name="TabContainer" type="TabContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Fighter" type="VBoxContainer" parent="TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Fighter"]
+layout_mode = 2
+text = "Positioning:"
+
+[node name="Label3" type="Label" parent="TabContainer/Fighter"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "X: Y: Z:"
+
+[node name="Label2" type="Label" parent="TabContainer/Fighter"]
+layout_mode = 2
+text = "Misc
+"
+
+[node name="Fighter2" type="VBoxContainer" parent="TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Fighter2"]
+layout_mode = 2
+text = "Positioning:"
+
+[node name="Label3" type="Label" parent="TabContainer/Fighter2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "X: Y: Z:"
+
+[node name="Label2" type="Label" parent="TabContainer/Fighter2"]
+layout_mode = 2
+text = "Misc
+"
+
+[node name="Tests" type="VBoxContainer" parent="TabContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="TabContainer/Tests"]
+layout_mode = 2
+text = "Clear Objects
+"
+
+[node name="Button2" type="Button" parent="TabContainer/Tests"]
+layout_mode = 2
+text = "Spawn Fighter"
+
+[node name="Button3" type="Button" parent="TabContainer/Tests"]
+layout_mode = 2
+text = "Change Arena"

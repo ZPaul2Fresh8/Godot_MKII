@@ -22,11 +22,7 @@ func _ready():
 	else:
 		$NoticePanel.visible = true
 	
-	# testing area
-	#var line : String = "0x646ec|0x37|0x46|0000|0000|0x0403ecc4|0x7000"
 	Debug_Test()
-	
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -37,10 +33,8 @@ func _process(delta):
 	else:
 		$FPS_Label.visible = false
 
-
 func _buttonpressed():
 	get_tree().get_root().propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
-
 
 func _on_ok_button_pressed():
 	# NOT UPDATING IN UI FSR
@@ -58,18 +52,16 @@ func _on_ok_button_pressed():
 	$NoticePanel/Notice/OK_Button.text = "OK"
 	$NoticePanel/Notice/OK_Button.pressed.connect(Debug_Test)
 
-
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		get_tree().quit()
 
-
 func Debug_Test():
-	# change to debug scene
-	#get_tree().change_scene_to_file("res://arenas/debug/debug.tscn")
-	
 	# Extract.Fonts()
-	Extract.Animations()
+	# Extract.Animations()
+	
+	# TEST ANIMATIONS HERE
+	get_tree().change_scene_to_file("res://arenas/debug/debug.tscn")
 	
 	#var image = Tools.Draw_Image(0x658d6, true) #  - copyright 1-bit
 	#var image = Tools.Draw_Image(0x4f1b4) #  - lifebar

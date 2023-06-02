@@ -2,7 +2,6 @@ extends Node
 
 # PALETTE FOR REUSE ON ANIMATION EXTRACTS
 var palette : PackedColorArray
-#var fpalette : PackedColorArray
 
 func Is_Frame_MultiSegmented(rom_loc : int) -> bool:
 	# checks to see if whether the 1st frame in the animation frame
@@ -99,6 +98,7 @@ func Draw_Blitter(header : int) -> Image:		# DRAWS BLITTER SPRITES
 	return image
 
 func Draw_Image(location:int, create_palette:bool) -> Image:		# DRAWS TYPICAL SPRITES
+	
 	# GET IMAGE HEADER
 	# 0: header location in rom
 	# 1: width
@@ -125,11 +125,11 @@ func Draw_Image(location:int, create_palette:bool) -> Image:		# DRAWS TYPICAL SP
 	var data : PackedByteArray = Global.graphic.slice(gfx_start, gfx_end)
 	
 	# CREATE PALETTE
-	if !create_palette:
-		if Is_Valid_Palette(header[7]):
-			palette = Tools.Convert_Palette((header[7] / 8) & 0xfffff)
-		else:
-			print(str(location) + ": Abort palette creation request. Palette returned as invalid")
+#	if !create_palette:
+#		if Is_Valid_Palette(header[7]):
+#			palette = Tools.Convert_Palette((header[7] / 8) & 0xfffff)
+#		else:
+#			print(str(location) + ": Abort palette creation request. Palette returned as invalid")
 
 	# CREATE BIT ARRAY
 	var bits = _Bits_To_Bytes(data)

@@ -13,3 +13,25 @@ export_presets.cfg
 .mono/
 data_*/
 mono_crash.*.json
+*.import
+
+# Exclude Roms
+*.l1
+rom/ug12.l31
+rom/ug14-vid
+rom/ug16-vid
+rom/ug17-vid
+rom/ug19-vid
+rom/ug20-vid
+rom/ug22-vid
+rom/uj12.l31
+rom/uj14-vid
+rom/uj16-vid
+rom/uj17-vid
+rom/uj19-vid
+rom/uj20-vid
+rom/uj22-vid
+
+# Exclude any assets extracted
+assets/fonts/
+assets/images/

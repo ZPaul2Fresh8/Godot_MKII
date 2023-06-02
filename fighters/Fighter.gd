@@ -22,14 +22,12 @@ var Segments : Array[Sprite2D]
 #p1_joq,32*(sqs+1),1	# player 1 joystick open queue
 
 @export var state = states.Null
+var char_id:int
 var player_id = 0
 @export var control = controller.Player
 @export var health = clampi(0, 0, 161)
 var rounds_won : int
 const MAX_SEGMENTS = 8
-
-# variables which we can let GD natively handle:
-#var map_position
 
 enum states {
 	Null,
@@ -56,9 +54,24 @@ func _init():
 		self.add_child(s)
 		Segments.append(s)
 
-func Setup_Fighter(char_id : Equates.fighters):
+
+func _input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if get_viewport_rect().has_point(get_local_mouse_position()):
+			if event.is_pressed():
+				get_tree().root.set_input_as_handled()
+				print(Equates.fighters.keys()[char_id])
+				
+			else:
+				pass
+			
+
+	
+
+func Setup_Fighter(charid : Equates.fighters):
 	# load resource file
-	Resources = ResourceLoader.load(Global.Fighter_Resource_Paths[char_id])
+	Resources = ResourceLoader.load(Global.Fighter_Resource_Paths[charid])
+	char_id=charid
 	
 	Print_Resource()
 

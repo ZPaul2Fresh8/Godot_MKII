@@ -70,7 +70,7 @@ func do_next_frame(mkproc:MK_Process):
 			if ani_lastcom.begins_with("1"):
 				#1.0.end = Jump to Frame 0
 				ani_jump = ani_lastcom.substr(2, 1)
-				print(ani_jump)
+				#print(ani_jump)
 			
 			match ani_lastcom.substr(0,1):
 				"0":
