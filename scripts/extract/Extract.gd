@@ -70,10 +70,10 @@ static func Animations():
 				
 		
 		# MAKE ANIMATION DIRS & GET
-		#for anim_id in ani_count:
+		for anim_id in ani_count:
 		####################### DEBUG OVERRIDE #################################
-		for anim_id in 1:
-			anim_id = Equates.ani_ids_kintaro.A_GSTANCE
+		#for anim_id in 1:
+		#	anim_id = Equates.ani_ids_kintaro.A_GSTANCE
 		########################################################################
 			
 			# IF DIR NON-EXISTENT, CREATE IT FOR ANIMATION #

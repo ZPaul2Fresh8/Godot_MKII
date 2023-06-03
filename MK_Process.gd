@@ -95,7 +95,7 @@ func Human_Control(): #FF82EE20
 	# idle animation set. set action id into players process
 	p_action = Equates.actions.Act_Stance
 	
-	mkani.get_char_ani(self, Equates.ani_ids.ANI_00_STANCE)
+	mkani.get_char_ani(self, Equates.ani_ids_kintaro.A_GSTANCE)
 	mkani.init_anirate(self, myobj.Resources.Stance_Anim_Speed)
 	
 	# WAIT HERE UNTIL ROUND STARTS

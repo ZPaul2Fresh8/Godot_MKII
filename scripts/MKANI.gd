@@ -2,7 +2,13 @@ extends Node
 class_name MKANI
 
 func get_char_ani(mkproc:MK_Process, ani_id:int):
-	mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids.keys()[ani_id]) + "/"
+	match mkproc.myobj.char_id:
+		Equates.fighters.KINTARO:
+			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids_kintaro.keys()[ani_id]) + "/"
+		Equates.fighters.SHAO_KAHN:
+			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids_kahn.keys()[ani_id]) + "/"
+		_:
+			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids.keys()[ani_id]) + "/"
 
 func init_anirate(mkproc:MK_Process, speed:int):
 	if speed != 0xfff:
