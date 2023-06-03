@@ -10,11 +10,25 @@ var mkani = MKANI.new()
 # MY ADDED VARS
 var myobj : Fighter
 var mythread : Thread
-##
-## animation pointer
+var mystate = states.Null
+var mycontrol = controller.None
+var timestamp_morph:int
+
+# ANIMATION STUFF
 var ani_ptr : String
 var anif_num : int
 var anif_max : int
+
+enum states {
+	Null,
+	Flipping,
+	Ducking,
+	Standing,
+	JumpUp }
+enum controller {
+	None,
+	Drone,
+	Player }
 
 #pdata
 var plink									# 0x000 - link ot next table - stored in proc array
@@ -72,51 +86,88 @@ func _ready():
 func _process(delta):
 	pass
 
-func Go_Idle():
+func Human_Control(): #FF82EE20
 	# STANCE SETUP
-	
-#	movi	act_stance,a0
-#	move	a0,*a13(p_action),w
+	mystate = states.Standing
+	mycontrol = controller.Player
+	MKPROC.Sleep(1, self)
+
 	# idle animation set. set action id into players process
 	p_action = Equates.actions.Act_Stance
 	
-	#	clr	a9			; assume animation #0
-	#	calla	get_char_ani
 	mkani.get_char_ani(self, Equates.ani_ids.ANI_00_STANCE)
 	mkani.init_anirate(self, myobj.Resources.Stance_Anim_Speed)
 	
-	# test animation - runs all frames once
-	#mkani.Set_Animation_Once(self, Equates.ani_ids.ANI_00_STANCE,myobj.Resources.Stance_Anim_Speed)
-		
-	# get fighters stance animation speed
-	#	movi	stance_speeds,a0
-	#	calla	get_char_word		; calla FF82EDC0
-	#	jauc	init_anirate		; set animation speed
-
+	# WAIT HERE UNTIL ROUND STARTS
 	while Global.f_start == false:
 		MKPROC.Sleep(1, self)
 		mkani.next_anirate(self)
 	
-#**************************************************************************
-#*											     *
-#*  next_anirate - animate according to p_anirate value			     *
-#* 											     *
-#*  input: a9 = animation frames to use						     *
-#*         *a13(p_anitab) = base animation table					     *
-#*											     *
-#**************************************************************************
-#next_anirate
-#	move	*a13(p_anicount),a0,w
-#	dec	a0
-#	move	a0,*a13(p_anicount),w
-#	jrne	nexta2						; not time yet
-#
-#	move	*a13(p_anirate),*a13(p_anicount),w	; reload p_anirate
-#	move	*a9,a1,l					; grab a frame
-#	jreq	nexta2						; zero = skip
-#
-#	move	*a8(oflags2),a1,w
-#	btst	b_multipart,a1
-#	jrne	nexta1
-#	callr	frame_a9
-#	rets
+	mystate = states.Standing
+	
+	# CHECK IF FIGHTER IS LAYING DOWN
+	print(Check_Fighter_Height())
+	
+	# CHECK IF PLAYER IS HOLDING DOWN
+	if Input.is_action_pressed("down"):
+		print("Down Pressed -- Go To Duck Routine!")
+	
+	# RESET TICKS I'VE BEEN DUCKING
+	p_downcount = 0
+	Idle_Stance()
+	
+	# TURN AROUND CHECK
+	# TODO HERE
+	
+	# ROUND STATUS JUMP
+	match Global.winner_status:
+		1:	# P1 Won
+			pass
+		2:	# P2 Won
+			pass
+		3:	# Finish Him
+			pass
+	
+	#if f_start = false # jump tp FF82EF30
+	
+	MKPROC.Sleep(1, self)
+	
+	# INPUT CHECKS
+	if Are_We_Blocking():
+		pass
+	
+	match Input:
+		"right":
+			pass
+		"left":
+			pass
+		"up":
+			pass
+		"down":
+			pass
+	
+	
+
+func Idle_Stance():
+	# idle animation set. set action id into players process
+	p_action = Equates.actions.Act_Stance
+	mkani.get_char_ani(self, Equates.ani_ids.ANI_00_STANCE)
+	mkani.init_anirate(self, myobj.Resources.Stance_Anim_Speed)
+
+func Are_We_Blocking() -> bool:
+	# CHECK IF PLAYER IS HOLDING BLOCK
+	if Input.is_action_pressed("Block"):
+		print("Block Pressed -- Go To Block Routine!")
+		return true
+	else: return false
+
+func Back_To_Shang_Check():
+	pass
+	#if myobj.char_id = Equates.fighters.SHANG_TSUNG:
+	#	if timestamp_morph
+
+func Check_Fighter_Height() -> int:
+	return Global.CurrentArena.Vertical_Offset - Calculate_Hitbox_Top()
+
+func Calculate_Hitbox_Top() -> int:
+	return myobj.global_position.y

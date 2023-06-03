@@ -18,7 +18,7 @@ modulate = Color(0.462745, 0.462745, 0.462745, 1)
 texture = ExtResource("2_1teh7")
 offset = Vector2(498, 488)
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="GodotSprite" type="Sprite2D" parent="."]
 position = Vector2(200, 100)
 texture = ExtResource("2_pc871")
 
@@ -93,17 +93,17 @@ modulate = Color(0.462745, 0.462745, 0.462745, 1)
 texture = ExtResource("2_1teh7")
 offset = Vector2(200, 640)
 
-[node name="Layer_6" type="Panel" parent="."]
+[node name="Layer_Fighters" type="Panel" parent="."]
 offset_right = 400.0
 offset_bottom = 254.0
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0rp12")
 
-[node name="Layer_7" type="Panel" parent="."]
+[node name="Layer_Font" type="Panel" parent="."]
 offset_right = 400.0
 offset_bottom = 254.0
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0rp12")
 
-[node name="Layer_8" type="Panel" parent="."]
+[node name="Layer_Topmost" type="Panel" parent="."]
 offset_right = 400.0
 offset_bottom = 254.0
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0rp12")

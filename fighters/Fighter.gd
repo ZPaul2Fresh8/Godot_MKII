@@ -21,20 +21,13 @@ var Segments : Array[Sprite2D]
 #p1_boq,32*(sqs+1),1	# player 1 button open queue
 #p1_joq,32*(sqs+1),1	# player 1 joystick open queue
 
-@export var state = states.Null
+#@export var state = states.Null
 var char_id:int
 var player_id = 0
-@export var control = controller.Player
+#@export var control = controller.Player
 @export var health = clampi(0, 0, 161)
 var rounds_won : int
 const MAX_SEGMENTS = 8
-
-enum states {
-	Null,
-	Flipping,
-	Ducking,
-	Standing,
-	JumpUp}
 
 enum controller {
 	Drone,
@@ -64,9 +57,6 @@ func _input(event):
 				
 			else:
 				pass
-			
-
-	
 
 func Setup_Fighter(charid : Equates.fighters):
 	# load resource file

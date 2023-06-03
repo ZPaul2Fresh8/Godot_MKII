@@ -193,11 +193,10 @@ func Set_Frame(mkproc:MK_Process, ani_id : int, Frame : int):
 		# simply update the offset and texture
 		mkproc.myobj.Segments[f].offset = Vector2i(int(header[3])*-1, int(header[4])*-1)
 		mkproc.myobj.Segments[f].texture = ResourceLoader.load(Path + files[f])
-		#segs.insert(segs.size(), mkproc.myobj.Segments[f])
 	
 	# remove textures of unused segmented sprites
-	for d in mkproc.myobj.MAX_SEGMENTS - files.size():
-		mkproc.myobj.Segments[d].texture.free()
+	for d in range(files.size(), mkproc.myobj.MAX_SEGMENTS):
+		mkproc.myobj.Segments[d].texture = null
 
 func Set_Animation_Once(mkproc:MK_Process, ani_id:Equates.ani_ids, frame_delay:float):
 	# get dir count (frame count)

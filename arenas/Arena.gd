@@ -13,10 +13,9 @@ class_name Arena
 
 @export_subgroup("Music")
 
-@export_subgroup("Layer 0")
-@export var Horizontal_Start_0 : int
-@export var Vertical_Start_0 : int
-@export var Parallax_Value_0 : int
+@export_subgroup("Fighter Layer")
+@export var Horizontal_Offset : int
+@export var Vertical_Offset : int
 
 var cam = Camera2D.new()
 var Layer_0 = Panel.new()

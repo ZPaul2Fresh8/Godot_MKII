@@ -9,7 +9,7 @@ const PROGRAM_FILE = "res://assets/mk2.program"
 const GRAPHICS_FILE = "res://assets/mk2.graphics"
 const SOUNDS_FILE = "res://assets/mk2.sounds"
 
-var Fighter_Resource_Paths : Array[String] = [
+const Fighter_Resource_Paths : Array[String] = [
 	"res://fighters/0_Kung_Lao.tres",
 	"res://fighters/1_Liu_Kang.tres",
 	"res://fighters/2_Cage.tres",
@@ -27,8 +27,10 @@ var Fighter_Resource_Paths : Array[String] = [
 	"res://fighters/14_Smoke.tres",
 	"res://fighters/15_Noob.tres",
 	"res://fighters/16_Jade.tres"]
-
-var Image_Path = "res://assets/images/"
+const Arena_Resource_Paths : Array[String] = [
+	"res://arenas/0_Dead_Pool.gd"
+]
+const Image_Path = "res://assets/images/"
 
 # PROCESSES
 var procs : Array[MK_Process]
@@ -47,6 +49,9 @@ var sound : PackedByteArray = FileAccess.get_file_as_bytes(SOUNDS_FILE)
 # PLAYER OBJECTS
 var Controllers : Array [MK_Process]
 var Fighters : Array [Fighter]
+
+# ARENA
+var CurrentArena : Arena
 
 # NOT USED YET
 #var up_vel = 0xa000
@@ -84,7 +89,7 @@ var Fighters : Array [Fighter]
 #start_of_dram,0,1
 #irqskye,16,1		# actual sky color (autoerase)
 #page,16,1
-#var tick : int		# universal timer zeroed at round start
+var ticks : int		# universal timer zeroed at round start
 #noflip,16,1		# no page flipping needed
 #displayon,16		# do display processing when != 0
 #dlists,32,1		# display lists table
@@ -208,8 +213,7 @@ var ground_y : int			# ground level y coordinate
 #f_doscore,16,1		# flag: display score/bars/timer
 #f_death,16,1		# flag: death blow achieved
 #f_norepell,16,1		# flag: don't repell players
-var f_start : bool = false
-#f_start,16,1		# flag: start a fightin'
+var f_start : bool = false	# flag: start a fightin'
 #f_auto_erase,16,1	# flag: do auto erase
 #f_novel,16,1		# flag: no velocities
 #f_warnsound,16,1	# flag: warning sound has been made
@@ -226,7 +230,7 @@ var f_start : bool = false
 #diff,16,1		# current game difficulty
 #perform,16,1		# human performance vs. drone
 #round_num,16,1		# round #
-#winner_status,16,1	# 1 = player 1 # 2 = 2 # 3 = finish him
+var winner_status:int = 0		# 1 = player 1 # 2 = 2 # 3 = finish him
 #map_start,32,1
 #map_position,16,1
 #battle_num,16,1		#

@@ -44,10 +44,10 @@ static func Animations():
 			dir.make_dir("res://assets/images/fighters")
 	
 	# MAKE FIGHTER DIR & GET ANIMATION PTR
-	for char_id in Equates.fighters.size():	# Extract all fighters
+	#for char_id in Equates.fighters.size():	# Extract all fighters
 	####################### DEBUG OVERRIDE #####################################
-	#for char_id in 1:							# Extract just Lao for now
-	#	char_id = 0x1
+	for char_id in 1:							# Extract just Lao for now
+		char_id = 12
 	############################################################################
 		
 		# IF DIR NON-EXISTENT, CREATE IT FOR CHAR
@@ -70,18 +70,18 @@ static func Animations():
 				
 		
 		# MAKE ANIMATION DIRS & GET
-		for anim_id in ani_count:
+		#for anim_id in ani_count:
 		####################### DEBUG OVERRIDE #################################
-		#for anim_id in 1:
-		#	anim_id = Equates.ani_ids.ANI_59_GETTING_IMPALED
+		for anim_id in 1:
+			anim_id = Equates.ani_ids_kintaro.A_GSTANCE
 		########################################################################
 			
 			# IF DIR NON-EXISTENT, CREATE IT FOR ANIMATION #
 			match char_id:
-				0xc:
+				Equates.fighters.KINTARO:
 					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]):
 						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id])
-				0xd:
+				Equates.fighters.SHAO_KAHN:
 					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id]):
 						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id])
 				_:
@@ -113,10 +113,20 @@ static func Animations():
 						var frame_jump:int = 0
 						# easy frame 0 check
 						if ani_ptr == ani_command:
-							var file = FileAccess.open("res://assets/images/fighters/" + 
-							Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id] + 
-							"/" + "1.0.end", FileAccess.WRITE)
-						
+							match char_id:
+								Equates.fighters.KINTARO:
+									var file = FileAccess.open("res://assets/images/fighters/" + 
+									Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + 
+									"/" + "1.0.end", FileAccess.WRITE)
+								Equates.fighters.SHAO_KAHN:
+									var file = FileAccess.open("res://assets/images/fighters/" + 
+									Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + 
+									"/" + "1.0.end", FileAccess.WRITE)
+								_:
+									var file = FileAccess.open("res://assets/images/fighters/" + 
+									Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id] + 
+									"/" + "1.0.end", FileAccess.WRITE)
+
 						# not frame 0, let's do some math
 						else:
 							#print("Unusual Animation Command Jump for " + str(frame_ptr))
@@ -162,10 +172,10 @@ static func Animations():
 
 				# IF DIR NON-EXISTENT, CREATE IT FOR ANIMATION #
 				match char_id:
-					0xc:
+					Equates.fighters.KINTARO:
 						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num)):
 							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num))
-					0xd:
+					Equates.fighters.SHAO_KAHN:
 						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num)):
 							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num))
 					_:
@@ -217,10 +227,10 @@ static func Animations():
 					var image = Tools.Draw_Image(Tools.Get_Pointer(frame), frame_num)
 					if image != null:
 						match char_id:
-							0xc:
+							Equates.fighters.KINTARO:
 								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
 								Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
-							0xd:
+							Equates.fighters.SHAO_KAHN:
 								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
 								Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
 							_:

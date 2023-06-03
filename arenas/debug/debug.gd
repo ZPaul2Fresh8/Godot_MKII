@@ -8,14 +8,14 @@ var info = preload("res://scenes/Info/Info.tscn")
 func _ready():
 	# set cam up
 	Set_Camera_Up()
-	for i in Equates.fighters.size() - 5:
+	for i in Equates.fighters.size():
 		# create fighter object
 		var MyFighter = Fighter.new()
-		MyFighter.Setup_Fighter(i)
+		MyFighter.Setup_Fighter(12)
 		
 		# create process and thread
 		var myproc = MK_Process.new()
-		var thread = MKPROC.Create_Thread(i, myproc, myproc.Go_Idle)
+		var thread = MKPROC.Create_Thread(i, myproc, myproc.Human_Control)
 		
 		# add ref to obj in process
 		myproc.myobj = MyFighter
@@ -27,19 +27,20 @@ func _ready():
 		Global.Controllers.append(myproc)
 		
 		# moving sprite to a central location
-		#MyFighter.Move_Object(Global.WINDOW_SIZE[0] / 2 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
-		MyFighter.Move_Object(30*i+30 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
+		MyFighter.Move_Object(Global.WINDOW_SIZE[0] / 2 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
+		#12# MyFighter.Move_Object(30*i+30 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
+		#17# MyFighter.Move_Object(24*i , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
 		
 		# finally making it appear on screen
-		Add_Object(MyFighter, $Layer_6)
-		
+		Add_Object(MyFighter, $Layer_Fighters)
+
 ###################### TESTING DEBUG INFO WINDOW ###############################
-	get_viewport().gui_embed_subwindows = false
-	var w = info.instantiate()
-	w.size = Vector2(400,800)
-	w.title="Fighter Info"
-	w.position=Vector2(4700, 420)
-	add_child(w)
+#	get_viewport().gui_embed_subwindows = false
+#	var w = info.instantiate()
+#	w.size = Vector2(400,800)
+#	w.title="Fighter Info"
+#	w.position=Vector2(4700, 420)
+#	add_child(w)
 ################################################################################
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -49,7 +50,7 @@ func _process(delta):
 	#$Camera2D.global_position.x += 1
 	#$Camera2D.look_at(Global.p1_obj.position)
 	#print(Global.objs.size())
-	$Sprite2D.rotate(delta)
+	$GodotSprite.rotate(delta)
 	pass
 
 func Set_Camera_Up():
