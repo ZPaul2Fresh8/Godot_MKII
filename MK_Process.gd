@@ -95,7 +95,7 @@ func Human_Control(): #FF82EE20
 	# idle animation set. set action id into players process
 	p_action = Equates.actions.Act_Stance
 	
-	mkani.get_char_ani(self, Equates.ani_ids_kintaro.A_GSTANCE)
+	mkani.get_char_ani(self, Equates.ani_ids.ANI_00_STANCE)
 	mkani.init_anirate(self, myobj.Resources.Stance_Anim_Speed)
 	
 	# WAIT HERE UNTIL ROUND STARTS
@@ -104,9 +104,10 @@ func Human_Control(): #FF82EE20
 		mkani.next_anirate(self)
 	
 	mystate = states.Standing
+	print(states.keys()[mystate])
 	
 	# CHECK IF FIGHTER IS LAYING DOWN
-	print(Check_Fighter_Height())
+	#print(Check_Fighter_Height())
 	
 	# CHECK IF PLAYER IS HOLDING DOWN
 	if Input.is_action_pressed("down"):
@@ -116,36 +117,43 @@ func Human_Control(): #FF82EE20
 	p_downcount = 0
 	Idle_Stance()
 	
-	# TURN AROUND CHECK
-	# TODO HERE
-	
-	# ROUND STATUS JUMP
-	match Global.winner_status:
-		1:	# P1 Won
-			pass
-		2:	# P2 Won
-			pass
-		3:	# Finish Him
-			pass
-	
-	#if f_start = false # jump tp FF82EF30
-	
-	MKPROC.Sleep(1, self)
-	
-	# INPUT CHECKS
-	if Are_We_Blocking():
-		pass
-	
-	match Input:
-		"right":
-			pass
-		"left":
-			pass
-		"up":
-			pass
-		"down":
-			pass
-	
+	while Global.winner_status == Equates.winner_status.No_Winner:
+		# TURN AROUND CHECK
+
+		
+		# ROUND STATUS JUMP
+		match Global.winner_status:
+			1:	# P1 Won
+				pass
+			2:	# P2 Won
+				pass
+			3:	# Finish Him
+				pass
+		
+		#if f_start = false # jump tp FF82EF30
+		
+		MKPROC.Sleep(1, self)
+		
+		# INPUT CHECKS
+		if Are_We_Blocking():
+			Disable_All_Buttons()
+			#TODO: Check facing direction, flip to face opponent if needed.
+			Face_Opponent()
+			Do_Block_Hi()
+
+		if Input.is_action_pressed("right"):
+				print("Right Pressed")
+		if Input.is_action_pressed("left"):
+				print("Left Pressed")
+		if Input.is_action_pressed("up"):
+				print("Up Pressed")
+		if Input.is_action_pressed("down"):
+				print("Down Pressed")
+		
+		Back_To_Shang_Check()
+		
+		# rip next frame
+		mkani.next_anirate(self)
 	
 
 func Idle_Stance():
@@ -157,17 +165,56 @@ func Idle_Stance():
 func Are_We_Blocking() -> bool:
 	# CHECK IF PLAYER IS HOLDING BLOCK
 	if Input.is_action_pressed("Block"):
-		print("Block Pressed -- Go To Block Routine!")
 		return true
 	else: return false
 
 func Back_To_Shang_Check():
-	pass
-	#if myobj.char_id = Equates.fighters.SHANG_TSUNG:
-	#	if timestamp_morph
+	if myobj.char_id == Equates.fighters.SHANG_TSUNG:
+		if Global.ticks - timestamp_morph >= 0x200:
+			#morph back
+			#return to FF861350 (Reset_Char_Control)
+			pass
+		pass
 
 func Check_Fighter_Height() -> int:
 	return Global.CurrentArena.Vertical_Offset - Calculate_Hitbox_Top()
 
 func Calculate_Hitbox_Top() -> int:
 	return myobj.global_position.y
+
+func Disable_All_Buttons():
+	mystate = states.Null
+
+func Face_Opponent():
+	pass
+
+func Do_Block_Hi():
+	Clear_Velocities()
+	mkani.get_char_ani(self, Equates.ani_ids.ANI_11_BLOCKING)
+	p_action = Equates.actions.Act_Blockhi
+	
+	#no worky
+	Thread_Jump(Animate_Block())
+	
+	#worky
+	#var temp_thread = Thread.new()
+	#temp_thread.start(Animate_Block)
+	#temp_thread.wait_to_finish()
+	
+	#mythread.wait_to_finish()
+	print("All finished")
+
+func Thread_Jump(call:Callable):
+	var temp_thread = Thread.new()
+	temp_thread.start(Animate_Block)
+	temp_thread.wait_to_finish()
+	print("All finished")
+
+func Animate_Block():
+	print("In animation thread")
+	MKPROC.Sleep(80, self)
+
+func Clear_Velocities():
+	myobj.oxvel = 0
+	myobj.oyvel = 0
+	myobj.ograv = 0

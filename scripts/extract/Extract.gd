@@ -44,10 +44,10 @@ static func Animations():
 			dir.make_dir("res://assets/images/fighters")
 	
 	# MAKE FIGHTER DIR & GET ANIMATION PTR
-	#for char_id in Equates.fighters.size():	# Extract all fighters
+	for char_id in Equates.fighters.size():	# Extract all fighters
 	####################### DEBUG OVERRIDE #####################################
-	for char_id in 1:							# Extract just Lao for now
-		char_id = 12
+	#for char_id in 1:							# Extract just Lao for now
+	#	char_id = 13
 	############################################################################
 		
 		# IF DIR NON-EXISTENT, CREATE IT FOR CHAR

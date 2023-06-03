@@ -8,10 +8,10 @@ var info = preload("res://scenes/Info/Info.tscn")
 func _ready():
 	# set cam up
 	Set_Camera_Up()
-	for i in Equates.fighters.size():
+	for i in 1:
 		# create fighter object
 		var MyFighter = Fighter.new()
-		MyFighter.Setup_Fighter(i)
+		MyFighter.Setup_Fighter(8)
 		
 		# create process and thread
 		var myproc = MK_Process.new()
@@ -27,9 +27,9 @@ func _ready():
 		Global.Controllers.append(myproc)
 		
 		# moving sprite to a central location
-		#MyFighter.Move_Object(Global.WINDOW_SIZE[0] / 2 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
+		MyFighter.Move_Object(Global.WINDOW_SIZE[0] / 2 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
 		#12# MyFighter.Move_Object(30*i+30 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
-		MyFighter.Move_Object(24*i , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
+		#MyFighter.Move_Object(24*i , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
 		
 		# finally making it appear on screen
 		Add_Object(MyFighter, $Layer_Fighters)

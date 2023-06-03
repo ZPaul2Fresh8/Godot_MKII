@@ -213,7 +213,7 @@ var ground_y : int			# ground level y coordinate
 #f_doscore,16,1		# flag: display score/bars/timer
 #f_death,16,1		# flag: death blow achieved
 #f_norepell,16,1		# flag: don't repell players
-var f_start : bool = false	# flag: start a fightin'
+var f_start : bool = true	# flag: start a fightin'
 #f_auto_erase,16,1	# flag: do auto erase
 #f_novel,16,1		# flag: no velocities
 #f_warnsound,16,1	# flag: warning sound has been made

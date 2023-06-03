@@ -16,25 +16,6 @@ enum Inputs {
 
 const FIGHTER_COUNT = 0x10
 
-#var fighter_names = [ 
-#	"Kung Lao",
-#	"Liu Kang",
-#	"Cage",
-#	"Baraka",
-#	"Kitana",
-#	"Mileena",
-#	"Shang Tsung",
-#	"Raiden",
-#	"Sub-Zero",
-#	"Reptile",
-#	"Scorpion",
-#	"Jax",
-#	"Kintaro",
-#	"Shao Kahn",
-#	"Smoke",
-#	"Noob Saibot",
-#	"Jade" ]
-
 enum fighters {
 	KUNG_LAO,
 	LIU_KANG,
@@ -339,74 +320,6 @@ enum actions {
 	Act_Blockhi = 0x700,
 	Act_Blockl = 0x701 }
 
-#var ani_names = [
-#	"STANCE",
-#	"WALK_FWD",
-#	"SKIP_FWD",
-#	"WALK_BWD",
-#	"SKIP_BWD",
-#	"DUCK",
-#	"JUMP_UP",
-#	"FLIP_FORWARD",
-#	"FLIP_BACKWARD",
-#	"TURN_AROUND",
-#	"TURN_AROUND_CROUCHED",
-#	"BLOCKING",
-#	"BLOCKING_CROUCHED",
-#	"HIGH_KICK",
-#	"LOW_KICK",
-#	"KNOCKED_DOWN",
-#	"HIT_HIGH",
-#	"HIT_LOW",
-#	"NORMAL_GET_UP",
-#	"HIGH_PUNCH",
-#	"LOW_PUNCH",
-#	"SWEEPING",
-#	"SWEPT",
-#	"GET_UP_FROM_SWEPT",
-#	"LOW_PUNCH_CROUCHED",
-#	"HIGH_KICK_CROUCHED",
-#	"LOW_KICK_CROUCHED",
-#	"TAKING_HIT_CROUCHED",
-#	"UPPERCUT",
-#	"JUMP_UP_KICK",
-#	"FLYING_KICK",
-#	"FLYING_PUNCH",
-#	"ROUND_HOUSE",
-#	"KNEE_TO_MID_SECTION",
-#	"ELBOW_TO_FACE",
-#	"STUMBLE_BACKWARDS",
-#	"GRAB_OPPONENT_TO_THROW",
-#	"SHREDDED",
-#	"THROW_PROJECTILE",
-#	"PROJECTILE_OBJECT",
-#	"STUNNED",
-#	"VICTORY_POSE",
-#	"THROWN_BY_LAO",
-#	"THROWN_BY_KANG",
-#	"THROWN_BY_CAGE",
-#	"THROWN_BY_BARAKA",
-#	"THROWN_BY_KITANA",
-#	"THROWN_BY_MILEENA",
-#	"THROWN_BY_SHANG",
-#	"THROWN_BY_RAIDEN",
-#	"THROWN_BY_SUBZERO",
-#	"THROWN_BY_REPTILE",
-#	"THROWN_BY_SCORPION",
-#	"THROWN_BY_JAX",
-#	"LOW_BLOWED",
-#	"BICYCLE_KICKED",
-#	"SOUL_DRAINED",
-#	"TORSO_GETTING_RIPPED",
-#	"SLOW_PROJ_BANG",
-#	"GETTING_IMPALED",
-#	"FALLING_FROM_DECAPITATION",
-#	"DECAPITATED_HEAD_ROTATING",
-#	"THROWN_BY_KITARO",
-#	"BACK_BREAKER",
-#	"CHANGE",
-#	"SCORPION_SLICED_ME"]
-
 enum ani_ids {
 	ANI_00_STANCE,						# 0
 	ANI_01_WALK_FWD,					# 1
@@ -531,3 +444,9 @@ enum ani_ids_kahn {
 	A_SK_TALKUP,	# 18 =
 	A_SK_TALKDOWN,	# 19 =
 	}
+
+enum winner_status {
+	No_Winner,
+	Player_1_Won,
+	Player_2_Won,
+	Finish_Him }
