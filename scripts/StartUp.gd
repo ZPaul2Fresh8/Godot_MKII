@@ -58,7 +58,7 @@ func _notification(what):
 
 func Debug_Test():
 	# Extract.Fonts()
-	# Extract.Animations()
+	#Extract.Animations()
 	
 	# TEST ANIMATIONS HERE
 	get_tree().change_scene_to_file("res://arenas/debug/debug.tscn")

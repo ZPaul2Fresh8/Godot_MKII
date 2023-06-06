@@ -1,5 +1,5 @@
-#extends Sprite2D
-extends AnimatedSprite2D
+extends Sprite2D
+#extends AnimatedSprite2D
 class_name MK_Object
 
 # debug options

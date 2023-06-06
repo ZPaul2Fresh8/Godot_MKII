@@ -47,6 +47,16 @@ func _init():
 		self.add_child(s)
 		Segments.append(s)
 
+func _process(delta):
+	# 0.0188679245283 = Delta
+	if oxvel != null:
+		move_local_x(oxvel / 0x10000)
+
+	if oyvel != null:
+		move_local_y(oyvel / 100000)
+	
+	if ograv != null:
+		pass
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:

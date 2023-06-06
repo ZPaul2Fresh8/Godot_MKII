@@ -176,6 +176,8 @@ enum game_state {
 	}
 
 enum actions {
+	Act_None = 0x0,
+	
 	# Projectile Attacks
 	Act_Throw_Hat = 0x1,
 	Act_Lkzap_Lo = 0x2,

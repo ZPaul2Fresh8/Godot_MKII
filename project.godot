@@ -28,8 +28,6 @@ Equate_AL="*res://Equates.gd"
 
 window/size/viewport_width=400
 window/size/viewport_height=254
-window/size/initial_position_type=0
-window/size/initial_position=Vector2i(4000, 0)
 window/size/resizable=false
 
 [dotnet]

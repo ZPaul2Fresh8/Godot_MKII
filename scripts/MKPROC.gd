@@ -21,12 +21,15 @@ static func Sleep(time:float, mkproc:MK_Process):
 	while mkproc.ptime > 0:
 		
 		# delay thread
-		OS.delay_msec(Global.TICK_TIME*time)
+		#OS.delay_msec(Global.TICK_TIME*time)
+		OS.delay_msec(Global.TICK_TIME)
 		mkproc.ptime -= 1
+		#print(mkproc.ptime)
 
 		# check for callback
-		if mkproc.pwake != null:
-			return
+		#if mkproc.pwake = 
+			#print("Callback detected")
+			#return
 	
 static func Suicide(mkproc:MK_Process):
 	mkproc.mythread.wait_to_finish()

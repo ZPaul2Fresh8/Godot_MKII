@@ -4,6 +4,7 @@ class_name Extract
 const PRIMARY_PAL 	= 0x20F22	# PRIMARY PALETTE ARRAY
 #const ALT_PAL 		= 0x20F66		# ALTERNATE PALETTE ARRAY
 const FATAL_PAL 	= 0x21920	# FATALITY PALETTE ARRAY
+const STONE_PAL		= 0x7CE34	# SK STONE PALETTE
 
 static func Fonts():
 	# Small 8 point font. These are normally created with a blitter
@@ -34,7 +35,9 @@ static func Animations():
 	
 	const FIGHTER_ANIMS_LOC = 0x20c2a
 	const FIGHTER_BASIC_ANI_COUNT = 66
-
+	var FrameLog = FileAccess.open("res://assets/images/fighters/frame_log.txt", FileAccess.WRITE)
+	var AnimPath: String
+	
 	var dir = DirAccess.open("res://assets")
 	if !dir.dir_exists("res://assets/images"):
 		dir.make_dir("res://assets/images")
@@ -47,12 +50,15 @@ static func Animations():
 	for char_id in Equates.fighters.size():	# Extract all fighters
 	####################### DEBUG OVERRIDE #####################################
 	#for char_id in 1:							# Extract just Lao for now
-	#	char_id = 13
+	#	char_id = Equates.fighters.SHAO_KAHN
 	############################################################################
 		
 		# IF DIR NON-EXISTENT, CREATE IT FOR CHAR
 		if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id]):
 			dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id])
+		
+		#if !FileAccess.file_exists("res://assets/images/fighters/frame_log.txt")
+		FrameLog.store_line(str(Equates.fighters.keys()[char_id]))
 		
 		# GET PTR TO ARRAY OF ANIMATIONS
 		var animations : int = Tools.Get_Pointer(FIGHTER_ANIMS_LOC + (char_id * 4))
@@ -61,9 +67,9 @@ static func Animations():
 		var ani_count : int
 		var ani_name : String
 		match char_id:
-			0xc:
+			Equates.fighters.KINTARO:
 				ani_count = Equates.ani_ids_kintaro.size()
-			0xd:
+			Equates.fighters.SHAO_KAHN:
 				ani_count = Equates.ani_ids_kahn.size()
 			_:
 				ani_count = Equates.ani_ids.size()
@@ -81,12 +87,15 @@ static func Animations():
 				Equates.fighters.KINTARO:
 					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]):
 						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id])
+					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]
 				Equates.fighters.SHAO_KAHN:
 					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id]):
 						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id])
+					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id]
 				_:
 					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id]):
 						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id])
+					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id]
 			
 			# GET ANIMATION POINTER
 			var ani_ptr : int = Tools.Get_Pointer(animations + (anim_id * 4))
@@ -94,17 +103,28 @@ static func Animations():
 			# IF 0 GOTO NEXT ANIMATION
 			if ani_ptr == 0: continue
 			
+			# frame log part 1/2
+			match char_id:
+				Equates.fighters.KINTARO:
+					FrameLog.store_line("\n\t" + str(Equates.ani_ids_kintaro.keys()[anim_id]) + ":")
+				Equates.fighters.SHAO_KAHN:
+					FrameLog.store_line("\n\t" + str(Equates.ani_ids_kahn.keys()[anim_id]) + ":")
+				_:
+					FrameLog.store_line("\n\t" + str(Equates.ani_ids.keys()[anim_id]) + ":")
+			
 			# GET FRAME PTRS HERE
 			var frame : int = ani_ptr
 			var frame_num : int  = 0
+			var frames : Array[int]		# added so we can do reverse frame sequences
 			while Tools.Get_Long(frame) != 0:
 				
 				# 0x7780 ARRAY LOC
 				var frame_ptr : int = Tools.Get_Long(frame)
+				frames.append(frame_ptr)
 				match (frame_ptr):
 					0:
-						# TERMINATOR / RET
 						break
+						print("Should never print")
 					1:
 						# NEXT LONG = PTR TO RESTART OF ANIMATION
 						# get jump to location
@@ -197,14 +217,14 @@ static func Animations():
 						if image != null:
 							var header : Array = image.get_meta("Header")
 							match char_id:
-								0xc:
+								Equates.fighters.KINTARO:
 									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
 									Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num) + "/" +
 									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
 									str(header[3]) + "_" + str(header[4]) + "_" +
 									str(header[5]) + "_" + str(header[6]) + "_" +
 									str(header[7]) + ".png")
-								0xd:
+								Equates.fighters.SHAO_KAHN:
 									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
 									Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num) + "/" +
 									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
@@ -221,9 +241,9 @@ static func Animations():
 						
 						segment += 4
 						seg_num += 1
-
+				
+				# DRAW FRAME
 				else:
-					# DRAW FRAME
 					var image = Tools.Draw_Image(Tools.Get_Pointer(frame), frame_num)
 					if image != null:
 						match char_id:
@@ -235,23 +255,58 @@ static func Animations():
 								Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
 							_:
 								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
-								Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
+								Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) +  ".png")
 
 				# get next frame pointer
 				frame += 4
 				frame_num += 1
+			
+			# frame log part 2/2
+			FrameLog.store_string("\t\t")
+			for i in frames.size():
+				FrameLog.store_string(str((frames[i] / 8) & 0xfffff) + " ")
+			
+			# if next long is 0, let's check the succeeding longs for matches
+			# in our frame array, if so then we have an animation which will
+			# be played in reverse with select frames.
+			if Tools.Get_Long(frame) == 0:
+				frame +=4
+				if frames.find(Tools.Get_Long(frame)) == -1: continue
+				var file = FileAccess.open(AnimPath + "/0.rev", FileAccess.WRITE)
+				while frames.find(Tools.Get_Long(frame)) != -1:
+					var nextlong:int = Tools.Get_Long(frame)
+					if nextlong == 0: break
+					
+					if frames.find(nextlong) != -1:
+						file.store_string(str(frames.find(nextlong)) + "|")
+					else:
+						# -1 = no match, leave loop
+						break
+					frame+=4
+				file.close()
+
 		print(Equates.fighters.keys()[char_id] + " extracted.")
 
 static func Choose_Palette(frame_num:int, ani_id:int, char_id:int):
 	# only create palette if on frame 0
 	if frame_num != 0: return
 	
-	match ani_id:
-		0:
-			Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
-		59:
-			Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 8 + FATAL_PAL))
-		62:
-			Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
-		65:
-			Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 8 + FATAL_PAL))
+	match char_id:
+		Equates.fighters.SHAO_KAHN:
+			match ani_id:
+				Equates.ani_ids_kahn.A_STONE_CRACK:
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(STONE_PAL))
+				Equates.ani_ids_kahn.STONE_EXPLODE:
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(STONE_PAL))
+				_:
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
+		_:
+			match ani_id:
+				0:
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
+				59:
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 8 + FATAL_PAL))
+				62:
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
+				65:
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 8 + FATAL_PAL))

@@ -28,8 +28,7 @@ const Fighter_Resource_Paths : Array[String] = [
 	"res://fighters/15_Noob.tres",
 	"res://fighters/16_Jade.tres"]
 const Arena_Resource_Paths : Array[String] = [
-	"res://arenas/0_Dead_Pool.gd"
-]
+	"res://arenas/0_Dead_Pool.gd" ]
 const Image_Path = "res://assets/images/"
 
 # PROCESSES
@@ -49,6 +48,9 @@ var sound : PackedByteArray = FileAccess.get_file_as_bytes(SOUNDS_FILE)
 # PLAYER OBJECTS
 var Controllers : Array [MK_Process]
 var Fighters : Array [Fighter]
+var Velocities : Array = [0,0,0,0]
+
+# PLAYER
 
 # ARENA
 var CurrentArena : Arena
@@ -330,3 +332,10 @@ var winner_status:int = 0		# 1 = player 1 # 2 = 2 # 3 = finish him
 #p1_bar_view	.set	(entry_9+(32*3))
 #p2_bar_view	.set	(entry_10+(32*3))
 #p2_bar_xpos	.set	(entry_10+(32*2))
+
+func TimeKeeper(myproc:MK_Process):
+	# GENERIC TICK COUNTER FOR NOW...
+	while Global.winner_status == 0:
+		MKPROC.Sleep(1, myproc)
+		ticks += 1
+		print(ticks)
