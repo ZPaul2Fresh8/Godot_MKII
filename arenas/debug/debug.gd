@@ -8,31 +8,32 @@ var info = preload("res://scenes/Info/Info.tscn")
 func _ready():
 	# set cam up
 	Set_Camera_Up()
+	
+	# set some basic arena vars up
+	Global.CurrentArena = self
+	
 	for i in 1:
 		# create genric game flow process
 		#var GameFlow = MK_Process.new()
 		#var gamflow_thread = MKPROC.Create_Thread(Equates.proc_id.pid_master, GameFlow, Global.TimeKeeper(GameFlow))
 		
 		# create fighter object
-		var MyFighter = Fighter.new()
-		MyFighter.Setup_Fighter(0)
+		var MyFighter = Fighter.new(0)
 		
 		# create process and thread
-		var myproc = MK_Process.new()
-		var thread = MKPROC.Create_Thread(i, myproc, myproc.Human_Control)
+		var MyProc = MK_Process.new(i)
 		
 		# add ref to obj in process
-		myproc.myobj = MyFighter
-		# add ref to thread in process
-		myproc.mythread = thread
+		MyProc.myobj = MyFighter
+		MyFighter.myproc = MyProc
 		
-		# add fighter and process to global
-		Global.Fighters.append(MyFighter)
-		Global.Controllers.append(myproc)
+		# set animation ground point
+		MyProc.p_ganiy = MyFighter.oyval
 		
 		# moving sprite to a central location
 		#MyFighter.Move_Object(Global.WINDOW_SIZE[0] / 2 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
-		MyFighter.Move_Object(i*100 + 150 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
+		MyFighter.oxval = i*100 + 150
+		#MyFighter.oyval = Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset
 		#12# MyFighter.Move_Object(30*i+30 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
 		#MyFighter.Move_Object(24*i , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
 		
@@ -69,3 +70,4 @@ func Set_Camera_Up():
 	$Camera2D.make_current()
 	$Camera2D.limit_left = Left_Boundary
 	$Camera2D.limit_right = Right_Boundary + Global.WINDOW_SIZE.x
+	

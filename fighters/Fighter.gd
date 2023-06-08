@@ -2,7 +2,8 @@ extends MK_Object # (Sprite2D)
 class_name Fighter
 
 var Resources : Fighter_Resource
-var Segments : Array[Sprite2D]
+
+
 
 #p1_state,16,1		# player 1 state
 #p1_shape,32,1
@@ -22,7 +23,7 @@ var Segments : Array[Sprite2D]
 #p1_joq,32*(sqs+1),1	# player 1 joystick open queue
 
 #@export var state = states.Null
-var char_id:int
+#var ochar:int
 var player_id = 0
 #@export var control = controller.Player
 @export var health = clampi(0, 0, 161)
@@ -36,9 +37,12 @@ enum controller {
 	ChoosingFighter,
 	FighterChosen}
 
-func _init():
-	Resources = Fighter_Resource.new()
+func _init(charid:int):
+	print("Fighter initialized.")
 	
+	# Load resources
+	Resources = ResourceLoader.load(Global.Fighter_Resource_Paths[charid])
+
 	# add blank sprites to our fighter
 	# to re-use for frame updates
 	for i in MAX_SEGMENTS:
@@ -46,34 +50,24 @@ func _init():
 		s.centered = false
 		self.add_child(s)
 		Segments.append(s)
-
-func _process(delta):
-	# 0.0188679245283 = Delta
-	if oxvel != null:
-		move_local_x(oxvel / 0x10000)
-
-	if oyvel != null:
-		move_local_y(oyvel / 100000)
 	
-	if ograv != null:
-		pass
+	# calculate placement
+	oyval = Global.CurrentArena.Ground - Resources.Ground_Offset
+	
+	ochar=charid
+	
+	Global.Fighters.append(self)
+	Print_Resource()
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if get_viewport_rect().has_point(get_local_mouse_position()):
 			if event.is_pressed():
 				get_tree().root.set_input_as_handled()
-				print(Equates.fighters.keys()[char_id])
+				print(Equates.fighters.keys()[ochar])
 				
 			else:
 				pass
-
-func Setup_Fighter(charid : Equates.fighters):
-	# load resource file
-	Resources = ResourceLoader.load(Global.Fighter_Resource_Paths[charid])
-	char_id=charid
-	
-	Print_Resource()
 
 func Print_Resource():
 	print("Name: " + str(Equates.fighters.keys()[Resources.Index]))

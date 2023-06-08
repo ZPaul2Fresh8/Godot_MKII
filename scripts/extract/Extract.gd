@@ -47,26 +47,26 @@ static func Animations():
 			dir.make_dir("res://assets/images/fighters")
 	
 	# MAKE FIGHTER DIR & GET ANIMATION PTR
-	for char_id in Equates.fighters.size():	# Extract all fighters
+	for ochar in Equates.fighters.size():	# Extract all fighters
 	####################### DEBUG OVERRIDE #####################################
-	#for char_id in 1:							# Extract just Lao for now
-	#	char_id = Equates.fighters.SHAO_KAHN
+	#for ochar in 1:							# Extract just Lao for now
+	#	ochar = Equates.fighters.SHAO_KAHN
 	############################################################################
 		
 		# IF DIR NON-EXISTENT, CREATE IT FOR CHAR
-		if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id]):
-			dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id])
+		if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar]):
+			dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar])
 		
 		#if !FileAccess.file_exists("res://assets/images/fighters/frame_log.txt")
-		FrameLog.store_line(str(Equates.fighters.keys()[char_id]))
+		FrameLog.store_line(str(Equates.fighters.keys()[ochar]))
 		
 		# GET PTR TO ARRAY OF ANIMATIONS
-		var animations : int = Tools.Get_Pointer(FIGHTER_ANIMS_LOC + (char_id * 4))
+		var animations : int = Tools.Get_Pointer(FIGHTER_ANIMS_LOC + (ochar * 4))
 		
 		# SET SIZE OF ANIMATIONS FOR FIGHTER TYPE
 		var ani_count : int
 		var ani_name : String
-		match char_id:
+		match ochar:
 			Equates.fighters.KINTARO:
 				ani_count = Equates.ani_ids_kintaro.size()
 			Equates.fighters.SHAO_KAHN:
@@ -83,19 +83,19 @@ static func Animations():
 		########################################################################
 			
 			# IF DIR NON-EXISTENT, CREATE IT FOR ANIMATION #
-			match char_id:
+			match ochar:
 				Equates.fighters.KINTARO:
-					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]):
-						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id])
-					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]
+					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]):
+						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id])
+					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]
 				Equates.fighters.SHAO_KAHN:
-					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id]):
-						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id])
-					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id]
+					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id]):
+						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id])
+					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id]
 				_:
-					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id]):
-						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id])
-					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id]
+					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id]):
+						dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id])
+					AnimPath = "res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id]
 			
 			# GET ANIMATION POINTER
 			var ani_ptr : int = Tools.Get_Pointer(animations + (anim_id * 4))
@@ -104,7 +104,7 @@ static func Animations():
 			if ani_ptr == 0: continue
 			
 			# frame log part 1/2
-			match char_id:
+			match ochar:
 				Equates.fighters.KINTARO:
 					FrameLog.store_line("\n\t" + str(Equates.ani_ids_kintaro.keys()[anim_id]) + ":")
 				Equates.fighters.SHAO_KAHN:
@@ -133,18 +133,18 @@ static func Animations():
 						var frame_jump:int = 0
 						# easy frame 0 check
 						if ani_ptr == ani_command:
-							match char_id:
+							match ochar:
 								Equates.fighters.KINTARO:
 									var file = FileAccess.open("res://assets/images/fighters/" + 
-									Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + 
+									Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + 
 									"/" + "1.0.end", FileAccess.WRITE)
 								Equates.fighters.SHAO_KAHN:
 									var file = FileAccess.open("res://assets/images/fighters/" + 
-									Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + 
+									Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + 
 									"/" + "1.0.end", FileAccess.WRITE)
 								_:
 									var file = FileAccess.open("res://assets/images/fighters/" + 
-									Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id] + 
+									Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id] + 
 									"/" + "1.0.end", FileAccess.WRITE)
 
 						# not frame 0, let's do some math
@@ -152,7 +152,7 @@ static func Animations():
 							#print("Unusual Animation Command Jump for " + str(frame_ptr))
 							frame_jump = frame_num - ((frame - ani_command) / 4)
 							var file = FileAccess.open("res://assets/images/fighters/" + 
-							Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id] + 
+							Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id] + 
 							"/" + "1." + str(frame_jump) + ".end", FileAccess.WRITE)
 						break
 					2:
@@ -183,7 +183,7 @@ static func Animations():
 						# GET NEXT WORD (CHAR ID)
 						while Tools.Get_Long(frame) == 8:
 							frame +=4
-							if Tools.Get_Word(frame) == char_id:
+							if Tools.Get_Word(frame) == ochar:
 								frame = Tools.Get_Pointer(frame+2)
 								break
 							frame +=6
@@ -191,19 +191,19 @@ static func Animations():
 						pass
 
 				# IF DIR NON-EXISTENT, CREATE IT FOR ANIMATION #
-				match char_id:
+				match ochar:
 					Equates.fighters.KINTARO:
-						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num)):
-							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num))
+						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num)):
+							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num))
 					Equates.fighters.SHAO_KAHN:
-						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num)):
-							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num))
+						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num)):
+							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num))
 					_:
-						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num)):
-							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" + Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num))
+						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num)):
+							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num))
 				
 				# Static Palette Forcing (Primarily due to cloned fighters)
-				Choose_Palette(frame_num, anim_id, char_id)
+				Choose_Palette(frame_num, anim_id, ochar)
 				
 				# CHECK IF MULTI-SEGMENTED FRAME OR NOT BY LOOKING AT PTR VALUE
 				if Tools.Is_Frame_MultiSegmented(frame):
@@ -216,23 +216,23 @@ static func Animations():
 						var image = Tools.Draw_Image(Tools.Get_Pointer(segment), seg_num + frame_num + anim_id)
 						if image != null:
 							var header : Array = image.get_meta("Header")
-							match char_id:
+							match ochar:
 								Equates.fighters.KINTARO:
-									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
+									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
 									Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num) + "/" +
 									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
 									str(header[3]) + "_" + str(header[4]) + "_" +
 									str(header[5]) + "_" + str(header[6]) + "_" +
 									str(header[7]) + ".png")
 								Equates.fighters.SHAO_KAHN:
-									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
+									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
 									Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num) + "/" +
 									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
 									str(header[3]) + "_" + str(header[4]) + "_" +
 									str(header[5]) + "_" + str(header[6]) + "_" +
 									str(header[7]) + ".png")
 								_:
-									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
+									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
 									Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num) + "/" +
 									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
 									str(header[3]) + "_" + str(header[4]) + "_" +
@@ -246,15 +246,15 @@ static func Animations():
 				else:
 					var image = Tools.Draw_Image(Tools.Get_Pointer(frame), frame_num)
 					if image != null:
-						match char_id:
+						match ochar:
 							Equates.fighters.KINTARO:
-								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
+								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
 								Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
 							Equates.fighters.SHAO_KAHN:
-								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
+								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
 								Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
 							_:
-								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[char_id] + "/" +
+								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
 								Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) +  ".png")
 
 				# get next frame pointer
@@ -285,13 +285,13 @@ static func Animations():
 					frame+=4
 				file.close()
 
-		print(Equates.fighters.keys()[char_id] + " extracted.")
+		print(Equates.fighters.keys()[ochar] + " extracted.")
 
-static func Choose_Palette(frame_num:int, ani_id:int, char_id:int):
+static func Choose_Palette(frame_num:int, ani_id:int, ochar:int):
 	# only create palette if on frame 0
 	if frame_num != 0: return
 	
-	match char_id:
+	match ochar:
 		Equates.fighters.SHAO_KAHN:
 			match ani_id:
 				Equates.ani_ids_kahn.A_STONE_CRACK:
@@ -299,14 +299,14 @@ static func Choose_Palette(frame_num:int, ani_id:int, char_id:int):
 				Equates.ani_ids_kahn.STONE_EXPLODE:
 					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(STONE_PAL))
 				_:
-					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(ochar * 4 + PRIMARY_PAL))
 		_:
 			match ani_id:
 				0:
-					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(ochar * 4 + PRIMARY_PAL))
 				59:
-					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 8 + FATAL_PAL))
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(ochar * 8 + FATAL_PAL))
 				62:
-					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 4 + PRIMARY_PAL))
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(ochar * 4 + PRIMARY_PAL))
 				65:
-					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(char_id * 8 + FATAL_PAL))
+					Tools.palette = Tools.Convert_Palette(Tools.Get_Pointer(ochar * 8 + FATAL_PAL))

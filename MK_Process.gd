@@ -58,7 +58,7 @@ var p_downcount : int						# 0x220 -ticks i have been ducking
 var p_store1								# 0x230 -long word storage 1
 var p_store2								# 0x250 -long word storage 2
 var p_store3								# 0x270 -long word storage 3
-var p_store4								# 0x290 -long word storage 4
+var p_store4 = 0							# 0x290 -long word storage 4
 var p_store5								# 0x2b0 -long word storage 5
 var p_store6								# 0x2d0 -long word storage 6
 var p_store7								# 0x2f0 -long word storage 7
@@ -80,6 +80,13 @@ enum p_flag_bits {
 	pm_gninja = 8		# flag: i am the green ninja
 }
 
+func _init(player:int):
+	print("Process initialized.")
+	
+	mythread = MKPROC.Create_Thread(player, self, Human_Control)
+
+	Global.Controllers.append(self)	
+
 func _ready():
 	pass
 
@@ -89,7 +96,6 @@ func _process(delta):
 ##### HUMAN CONTROL ############################################################
 
 func Human_Control():			#FF82EE20
-	print("Human Control Initiated")
 	# STANCE SETUP
 	Set_State(states.Standing)
 	Set_Control(controller.Player)
@@ -124,12 +130,11 @@ func Human_Control_Loop():		#FF82EFA0
 	Idle_Stance()
 	
 	while Global.winner_status == Equates.winner_status.No_Winner:
-		
 	
 	# TURN AROUND CHECK
 		if !Are_We_Facing_Opponent():
 			Face_Opponent()
-	#TODO		JUMP TO CHAR CONTROL RESET
+			Reset_Char_Control()
 		
 		# ROUND STATUS JUMP
 		Check_For_End_Round()
@@ -151,11 +156,10 @@ func Human_Control_Loop():		#FF82EFA0
 				Do_Block_Hi()
 				
 				while Input.is_action_pressed("Block"):
-					
+					print("Block Pressed")
 					MKPROC.Sleep(1, self)
 					
 					if Input.is_action_pressed("down"):
-						# Do Input Down Here
 						Input_Down()
 					
 					# TURN AROUND CHECK HERE
@@ -175,7 +179,7 @@ func Human_Control_Loop():		#FF82EFA0
 			if Input.is_action_pressed("left"):
 					Input_Left()
 			if Input.is_action_pressed("up"):
-					print("Up Pressed")
+					Input_Up()
 			if Input.is_action_pressed("down"):
 					Input_Down()
 			
@@ -209,6 +213,72 @@ func Drone_Control_Loop():
 	pass
 
 ##### INPUT ROUTINES ###########################################################
+
+func Input_Up():
+	Check_To_Flip()
+	Set_State(states.Null)
+	
+	# theres some extra input checks immediately after UP is pressed @
+	# ff831bf0. essentially if all is well we get a 3 tick delay.
+	# check for left/right pressed within 3 ticks of up being detected
+	for i in 3:
+		if Input.is_action_pressed("right"):
+			mythread.call(Flip_Right())
+		if Input.is_action_pressed("left"):
+			mythread.call(Flip_Left())
+		MKPROC.Sleep(1, self)
+	
+	Set_State(states.JumpUp)
+	var myheight = Distance_From_Ground()
+	
+	#play char audio or jump up
+	Set_Action(Equates.actions.Act_Jumpup)
+	
+	# velocity
+	myobj.oyvel = -10 # -0xfff60000 / 0x10000
+
+	# gravity
+	myobj.ograv = 0.5 # 0x8000 / 0x10000
+	
+	mkani.get_char_ani(self, Equates.ani_ids.ANI_06_JUMP_UP)
+	mkani.init_anirate(self, 3)
+	
+	if myobj.oyval > p_ganiy:
+		print("Started Underground!")
+		myobj.oyval = p_ganiy
+	
+	# have to trick this into not being equal so the loop behaves like the
+	# original game
+	myobj.oyval -=1
+	
+	print(myobj.oyval)
+	print(p_ganiy)
+	while myobj.oyval < p_ganiy:
+		print("Loop Achieved")
+		print(str(myobj.oyval) + " : " + str(p_ganiy))
+		# flight loop
+		MKPROC.Sleep(1, self)
+		
+		# various calls can be invoked while in mid-air
+		# they are checked here
+		if p_store4 is Callable:
+			print("Called p_store4")
+			call(p_store4)
+		
+		mkani.next_anirate(self)
+	
+	print("Gravity Removed")
+	myobj.ograv = 0
+	Clear_Velocities()
+	Ground_Me()
+	
+	#audio landing sound
+	
+	# find rev frames (typically after normal animation)
+	var seq = mkani.find_ani_part2(self, Equates.ani_ids.ANI_06_JUMP_UP)
+	# play frames from seq
+	mkani.mframew(self, 3, seq)
+	Reset_Char_Control()
 
 func Input_Down():				#ff82f960
 	print("Down Pressed")
@@ -304,7 +374,6 @@ func Input_Right():				#FF830A60
 		Walk_Forward("right")
 	else:
 		Walk_Backward("left")
-	
 
 func Input_Left():				#FF830990
 	Set_Action(Equates.actions.Act_None)
@@ -315,6 +384,13 @@ func Input_Left():				#FF830990
 		Walk_Backward("left")
 
 ##### ANIMATED MOVES ROUTINES ##################################################
+
+func Flip_Right():
+	print("Flip Right Goes Here")
+
+func Flip_Left():
+	print("Flip Left Goes Here")
+
 func Walk_Forward(input:String):
 	mkani.init_anirate(self, myobj.Resources.Walk_Anim_Speed)
 	if myobj.is_flipped_h():
@@ -445,7 +521,7 @@ func Do_Unblock_Low():
 ##### GAME FLOW ROUTINES #######################################################
 
 func Back_To_Shang_Check():
-	if myobj.char_id == Equates.fighters.SHANG_TSUNG:
+	if myobj.ochar == Equates.fighters.SHANG_TSUNG:
 		if Global.ticks - timestamp_morph >= 0x200:
 			#morph back
 			#return to FF861350 (Reset_Char_Control)
@@ -490,6 +566,9 @@ func Am_I_Airborn() -> bool:					# AKA CHAR_VS_GROUND_COMPARE
 		return true
 	return false
 
+func Distance_From_Ground():
+	return myobj.Resources.Ground_Offset - Global.CurrentArena.Ground
+
 func Back_To_Normal():
 	# reset hit count
 	p_hit = 0
@@ -509,7 +588,7 @@ func Check_To_Flip():
 	pass
 
 func Are_We_Fighter(fighter:Equates.fighters) -> bool:
-	if myobj.char_id == fighter: return true
+	if myobj.ochar == fighter: return true
 	else: return false
 
 func Are_We_Blocking() -> bool:
@@ -544,6 +623,10 @@ func Clear_Velocities():						# AKA stop_me
 	myobj.oyvel = 0
 	myobj.ograv = 0
 	Global.Velocities[procid] = 0
+	#print("Velocities cleared")
+
+func Ground_Me():
+	myobj.oyval = p_ganiy
 
 func Set_Action(act_id:Equates.actions):
 	p_action = act_id

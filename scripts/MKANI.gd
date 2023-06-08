@@ -4,7 +4,7 @@ class_name MKANI
 func get_char_ani(mkproc:MK_Process, ani_id:int):
 	# SETS THE DIRECTORY OF THE ANIMATION
 	# RETURNS INT ARRAY FOR SEQUENCE OF FRAME PLAYBACK
-	match mkproc.myobj.char_id:
+	match mkproc.myobj.ochar:
 		Equates.fighters.KINTARO:
 			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids_kintaro.keys()[ani_id]) + "/"
 		Equates.fighters.SHAO_KAHN:
@@ -51,6 +51,7 @@ func init_anirate(mkproc:MK_Process, speed:int):
 		mkproc.p_anirate = speed
 		mkproc.p_anicount = speed
 
+# AKA ANIMATION RIP FRAME
 # ANIMATE ACCORDING TO MK_PROCESS.P_ANIRATE VALUE
 func next_anirate(mkproc:MK_Process):
 #	next_anirate - animate according to p_anirate value
@@ -107,7 +108,6 @@ func animate_a0_frames(mkproc:MK_Process, value:int):
 	for i in loops:
 		if do_next_frame(mkproc) == 0 : return
 		MKPROC.Sleep(sleep, mkproc)
-	
 
 # AKA ANIMATION LOAD SPRITE
 func do_next_frame(mkproc:MK_Process):
