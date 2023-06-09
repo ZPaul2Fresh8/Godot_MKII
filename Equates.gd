@@ -16,6 +16,10 @@ enum Inputs {
 
 const FIGHTER_COUNT = 0x10
 
+enum Values {
+	dont_touch = 13
+}
+
 enum fighters {
 	KUNG_LAO,
 	LIU_KANG,

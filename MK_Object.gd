@@ -7,6 +7,11 @@ class_name MK_Object
 var myproc : MK_Process
 var Segments : Array[Sprite2D]
 
+enum FacingDirection {
+	Right,
+	Left
+}
+
 # OBJECT STRUCTURE
 var olink						# 0x000 - link to next object in pool (not used, now in Global Array)
 var ograv : float = 0				# 0x020 - gravity
@@ -37,7 +42,7 @@ var oshape						# 0x1d0 - multipart "ani shape"
 var ochar : int					# 0x1f0 - char id
 
 func _init():
-	print("Object says hi")
+	#print("Object says hi")
 	# add obj to pool
 	Global.objs.append(self)
 
@@ -55,13 +60,15 @@ func _process(delta):
 	# make horizontal placement
 	oxval = oxval + (oxvel/0x10000)
 	position.x = oxval
-	
+
 	$"../../Layer_Font/DebugContainer/X".text = "X: " + str(oxval)
 	$"../../Layer_Font/DebugContainer/Y".text = "Y: " + str(oyval)
-	$"../../Layer_Font/DebugContainer/state".text = "State: " + myproc.states.keys()[myproc.mystate]
+	if myproc != null:
+		$"../../Layer_Font/DebugContainer/state".text = "State: " + myproc.states.keys()[myproc.mystate]
 	$"../../Layer_Font/DebugContainer/xvel".text = "X Velocity: " + str(oxvel)
 	$"../../Layer_Font/DebugContainer/yvel".text = "Y Velocity: " + str(oyvel)
 	$"../../Layer_Font/DebugContainer/oid".text = "Object ID: " + str(ochar)
+	$"../../Layer_Font/DebugContainer/grav".text = "Gravity: " + str(ograv)
 
 func Move_Object(X : int, Y : int):
 	self.move_local_x(X)

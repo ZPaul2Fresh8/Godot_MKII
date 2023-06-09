@@ -50,14 +50,16 @@ var Controllers : Array [MK_Process]
 var Fighters : Array [Fighter]
 var Velocities : Array = [0,0,0,0]
 
-# PLAYER
+# PHYSICS
+var up_vel : float = -5
+var up_grav : float =  0.5
+var angle_grav : float = 0.5
 
 # ARENA
 var CurrentArena : Arena
 
 # NOT USED YET
-#var up_vel = 0xa000
-#var up_grav = 0x8000
+
 #var bb_fatality = 5
 #var pit_fatality = 6
 #var fs_fatality = 7

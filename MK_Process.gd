@@ -58,7 +58,7 @@ var p_downcount : int						# 0x220 -ticks i have been ducking
 var p_store1								# 0x230 -long word storage 1
 var p_store2								# 0x250 -long word storage 2
 var p_store3								# 0x270 -long word storage 3
-var p_store4 = 0							# 0x290 -long word storage 4
+var p_store4 : Callable					# 0x290 -long word storage 4
 var p_store5								# 0x2b0 -long word storage 5
 var p_store6								# 0x2d0 -long word storage 6
 var p_store7								# 0x2f0 -long word storage 7
@@ -214,66 +214,22 @@ func Drone_Control_Loop():
 
 ##### INPUT ROUTINES ###########################################################
 
-func Input_Up():
+func Input_Up():				#ff82f3e0
 	Check_To_Flip()
+	
 	Set_State(states.Null)
 	
 	# theres some extra input checks immediately after UP is pressed @
-	# ff831bf0. essentially if all is well we get a 3 tick delay.
-	# check for left/right pressed within 3 ticks of up being detected
-	for i in 3:
-		if Input.is_action_pressed("right"):
-			mythread.call(Flip_Right())
-		if Input.is_action_pressed("left"):
-			mythread.call(Flip_Left())
-		MKPROC.Sleep(1, self)
+	# ff831bf0. this checks for an angle input (left/right + up)
+	Angle_Check()
 	
 	Set_State(states.JumpUp)
-	var myheight = Distance_From_Ground()
 	
-	#play char audio or jump up
-	Set_Action(Equates.actions.Act_Jumpup)
+	# Not needed I believe.
+	# var myheight = Distance_From_Ground()
 	
-	# velocity
-	myobj.oyvel = -10 # -0xfff60000 / 0x10000
+	Do_Jump_Up()
 
-	# gravity
-	myobj.ograv = 0.5 # 0x8000 / 0x10000
-	
-	mkani.get_char_ani(self, Equates.ani_ids.ANI_06_JUMP_UP)
-	mkani.init_anirate(self, 3)
-	
-	if myobj.oyval > p_ganiy:
-		print("Started Underground!")
-		myobj.oyval = p_ganiy
-	
-	# have to trick this into not being equal so the loop behaves like the
-	# original game
-	myobj.oyval -=1
-	
-	print(myobj.oyval)
-	print(p_ganiy)
-	while myobj.oyval < p_ganiy:
-		print("Loop Achieved")
-		print(str(myobj.oyval) + " : " + str(p_ganiy))
-		# flight loop
-		MKPROC.Sleep(1, self)
-		
-		# various calls can be invoked while in mid-air
-		# they are checked here
-		if p_store4 is Callable:
-			print("Called p_store4")
-			call(p_store4)
-		
-		mkani.next_anirate(self)
-	
-	print("Gravity Removed")
-	myobj.ograv = 0
-	Clear_Velocities()
-	Ground_Me()
-	
-	#audio landing sound
-	
 	# find rev frames (typically after normal animation)
 	var seq = mkani.find_ani_part2(self, Equates.ani_ids.ANI_06_JUMP_UP)
 	# play frames from seq
@@ -385,11 +341,167 @@ func Input_Left():				#FF830990
 
 ##### ANIMATED MOVES ROUTINES ##################################################
 
+func Angle_Check():
+	# check for left/right pressed within 3 ticks of up being detected
+	for i in 3:
+		if Input.is_action_pressed("right"):
+			mythread.call(Flip_Right())
+		if Input.is_action_pressed("left"):
+			mythread.call(Flip_Left())
+		MKPROC.Sleep(1, self)
+
+func Do_Jump_Up():
+	#play char audio or jump up
+	
+	Set_Action(Equates.actions.Act_Jumpup)
+	
+	# velocity
+	#myobj.oyvel = -10 # -0xfff60000 / 0x10000
+	# gravity
+	#myobj.ograv = 0.5 # 0x8000 / 0x10000
+	
+	Flight_Call(0, -10, Global.up_grav, Equates.ani_ids.ANI_06_JUMP_UP, 4)
+	
+	#audio landing sound
+
+func Null_Call():
+	pass
+
+func Flight(new_xveloc:float, new_yveloc:float, new_gravity:float, ani_id:int, ani_speed:int):# USED FOR JUMP ATTACKS
+	# clear any callable before flight
+	p_store4 = Null_Call()
+	
+	# ani_id -1 = no animation setup needed
+	Flight_Call(new_xveloc, new_yveloc, new_gravity, ani_id, ani_speed)
+
+func Flight_Call(new_xveloc:float, new_yveloc:float, new_gravity:float, ani_id:int, ani_speed:int):
+	# check if new y velocity is being requested
+	if new_yveloc != Equates.Values.dont_touch:
+		myobj.oyvel = new_yveloc
+		#print("Flight_Call(): Set X Velocity")
+	
+	# check if new gravity is being requested
+	if new_gravity != Equates.Values.dont_touch:
+		myobj.ograv = new_gravity
+		#print("Flight_Call(): Set Gravity")
+	
+	# check if new x velocity is being requested
+	if new_xveloc != Equates.Values.dont_touch:
+		myobj.oxvel = new_xveloc
+		#print("Flight_Call(): Set Y Velocity")
+	
+	# setup animation if needed
+	if !ani_id < 0:
+		#print("Flight_Call(): Getting Animation...")
+		mkani.get_char_ani(self, ani_id)
+	
+	mkani.init_anirate(self, ani_speed)
+	
+	if myobj.oyval > p_ganiy:
+		#print("Started Underground!")
+		myobj.oyval = p_ganiy
+	
+	# have to trick this into not being equal so the loop behaves like the
+	# original game
+	myobj.oyval -=1
+	
+	while myobj.oyval < p_ganiy:
+		#print("Loop Achieved")
+		#print(str(myobj.oyval) + " : " + str(p_ganiy))
+		# flight loop
+		MKPROC.Sleep(1, self)
+		
+		# NOT WORKING FOR SOME REASON!
+		# various calls can be invoked while in mid-air
+		# they are checked here
+		#p_store4.call()
+#		if p_store4 is Callable:
+#			print("Called p_store4")
+#			p_store4.call()
+#		else:
+#			print("p_store4 not callable")
+		
+		mkani.next_anirate(self)
+	
+	#print("Gravity Removed")
+	myobj.ograv = 0
+	Clear_Velocities()
+	Ground_Me()
+
 func Flip_Right():
-	print("Flip Right Goes Here")
+	#print("Flipping Right...")
+	Do_Angle_Jump(0x40000) #0x40000
+	Reset_Char_Control()
 
 func Flip_Left():
-	print("Flip Left Goes Here")
+	#print("Flip Left Goes Here")
+	Do_Angle_Jump(-0x40000) #0x40000
+	Reset_Char_Control()
+
+func Do_Angle_Jump(x_veloc:float):
+	var flip_rotation
+	
+	#right-flippin'
+	if myobj.is_flipped_h():
+		if x_veloc < 0:
+			flip_rotation = Equates.ani_ids.ANI_07_FLIP_FORWARD
+		else:
+			flip_rotation = Equates.ani_ids.ANI_08_FLIP_BACKWARD
+	else:	
+		if x_veloc < 0:
+			flip_rotation = Equates.ani_ids.ANI_08_FLIP_BACKWARD
+		else:
+			flip_rotation = Equates.ani_ids.ANI_07_FLIP_FORWARD
+	
+	# do ochar_sound here
+	
+	Clear_Velocities()
+	Set_State(states.Null)
+	
+	# allow attacks now
+	Set_State(states.Flipping)
+	Set_Action(Equates.actions.Act_Angle_Jump)
+	
+	# save starting position
+	p_store8 = myobj.oxval
+	
+	# negate velocity if we're right side guy
+	if myobj.is_flipped_h():
+		x_veloc = x_veloc * -1
+	
+	#p_store4 = Angle_Jump_Call()
+	Flight_Call(x_veloc, -10, Global.angle_grav, flip_rotation, 3)
+	
+	# sound 1e of landing on ground
+	
+	Set_Action(Equates.actions.Act_Land)
+	
+	Face_Opponent()
+	mkani.get_char_ani(self, Equates.ani_ids.ANI_07_FLIP_FORWARD)
+	mkani.do_next_frame(self)
+	
+	MKPROC.Sleep(3, self)
+	Back_To_Shang_Check()
+
+func Angle_Jump_Call():
+	print(abs(p_ganiy - myobj.oyval))
+	
+	next_flip_woosh()
+	
+	# if on upwards, skip
+	if myobj.oyvel < 0: return
+	
+	if abs(p_ganiy - myobj.oyval) > 0x20: return
+	
+	# we're close to ground, disable buttons
+	Set_State(states.Null)
+	
+	# clear any flight calls
+	p_store4 = Null_Call()
+
+func next_flip_woosh():
+	#511: joy.asm
+	pass
 
 func Walk_Forward(input:String):
 	mkani.init_anirate(self, myobj.Resources.Walk_Anim_Speed)
@@ -403,7 +515,7 @@ func Walk_Forward(input:String):
 	while Input.is_action_pressed(input):
 		MKPROC.Sleep(1, self)
 		Check_For_End_Round()
-		#Flip_Input_Jump
+		Flip_Input_Check()
 		Check_And_Face_Opponent()
 		mkani.next_anirate(self)
 	
@@ -416,6 +528,13 @@ func Walk_Forward(input:String):
 	
 	Clear_Velocities()
 	Reset_Char_Control()
+
+func Flip_Input_Check():
+	if Input.is_action_pressed("up"):
+		if Input.is_action_pressed("right"):
+			Flip_Right()
+		else:
+			Flip_Left()
 
 func Walk_Backward(input:String):
 	mkani.init_anirate(self, myobj.Resources.Walk_BWD_Anim_Speed)
@@ -430,7 +549,7 @@ func Walk_Backward(input:String):
 	while Input.is_action_pressed(input):
 		MKPROC.Sleep(1, self)
 		Check_For_End_Round()
-		#Flip_Input_Jump
+		Flip_Input_Check()
 		Check_And_Face_Opponent()
 		mkani.next_anirate(self)
 	
