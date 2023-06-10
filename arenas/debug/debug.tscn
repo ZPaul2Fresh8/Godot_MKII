@@ -25,13 +25,6 @@ offset = Vector2(498, 488)
 position = Vector2(200, 100)
 texture = ExtResource("2_pc871")
 
-[node name="DebugLabel" type="RichTextLabel" parent="."]
-visible = false
-offset_left = 5.0
-offset_right = 105.0
-offset_bottom = 25.0
-text = "Debug Area"
-
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
 limit_left = -500

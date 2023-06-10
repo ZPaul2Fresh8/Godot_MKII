@@ -28,7 +28,7 @@ var player_id = 0
 #@export var control = controller.Player
 @export var health = clampi(0, 0, 161)
 var rounds_won : int
-const MAX_SEGMENTS = 8
+const MAX_SEGMENTS = 7
 
 enum controller {
 	Drone,

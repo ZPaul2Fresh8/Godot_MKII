@@ -35,3 +35,4 @@ rom/uj22-vid
 # Exclude any assets extracted
 assets/fonts/
 assets/images/
+.vscode/settings.json

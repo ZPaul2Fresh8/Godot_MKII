@@ -9,6 +9,8 @@ func _ready():
 	# set cam up
 	Set_Camera_Up()
 	
+	# test comment
+
 	# set some basic arena vars up
 	Global.CurrentArena = self
 	
@@ -64,6 +66,11 @@ func _process(delta):
 	
 	#print(Global.objs.size())
 	$GodotSprite.rotate(delta)
+	
+	# stick cam to player
+	$Camera2D.position.x = Global.procs[0].myobj.oxval - 150
+	$Layer_Font.position.x = $Camera2D.position.x
+	
 
 func Set_Camera_Up():
 	#self.add_child(cam1)

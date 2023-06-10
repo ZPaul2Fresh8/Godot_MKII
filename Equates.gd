@@ -12,7 +12,7 @@ enum Inputs {
 	Low_Punch,
 	Block,
 	High_Kick,
-	Low_Kick}
+	Low_Kick }
 
 const FIGHTER_COUNT = 0x10
 

@@ -100,7 +100,7 @@ func Human_Control():			#FF82EE20
 	Set_State(states.Standing)
 	Set_Control(controller.Player)
 
-	MKPROC.Sleep(1, self)
+	Sleep(1)
 
 	# idle animation set. set action id into players process
 	Set_Action(Equates.actions.Act_Stance)
@@ -109,7 +109,7 @@ func Human_Control():			#FF82EE20
 	
 	# WAIT HERE UNTIL ROUND STARTS
 	while Global.f_start == false:
-		MKPROC.Sleep(1, self)
+		Sleep(1)
 		mkani.next_anirate(self)
 	
 	Human_Control_Loop()
@@ -141,7 +141,7 @@ func Human_Control_Loop():		#FF82EFA0
 		
 		#if f_start = false # jump tp FF82EF30
 		
-		MKPROC.Sleep(1, self)
+		Sleep(1)
 		
 		# INPUT CHECKS
 		if mystate != states.Null:
@@ -157,7 +157,7 @@ func Human_Control_Loop():		#FF82EFA0
 				
 				while Input.is_action_pressed("Block"):
 					print("Block Pressed")
-					MKPROC.Sleep(1, self)
+					Sleep(1)
 					
 					if Input.is_action_pressed("down"):
 						Input_Down()
@@ -195,7 +195,7 @@ func Drone_Control():
 	Set_State(states.Standing)
 	Set_Control(controller.Drone)
 
-	MKPROC.Sleep(1, self)
+	Sleep(1)
 
 	# idle animation set. set action id into players process
 	Set_Action(Equates.actions.Act_Stance)
@@ -204,7 +204,7 @@ func Drone_Control():
 	
 	# WAIT HERE UNTIL ROUND STARTS
 	while Global.f_start == false:
-		MKPROC.Sleep(1, self)
+		Sleep(1)
 		mkani.next_anirate(self)
 	
 	Drone_Control_Loop()
@@ -236,92 +236,34 @@ func Input_Up():				#ff82f3e0
 	mkani.mframew(self, 3, seq)
 	Reset_Char_Control()
 
-func Input_Down():				#ff82f960
+func Input_Down():				#ff82f960 / 159 joy.asm
 	print("Down Pressed")
-	Set_State(states.Null)
+	Disable_All_Buttons
 	Do_Duck()
-	# CODE PREWVIEW OF BELOW
-		#Clear_Velocities()
-		#Check_To_Flip()
-		#var seq:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_05_DUCK)
-		#mkani.mframew(self, 2, seq)
-	While_Ducking_Start()
 	# CODE PREVIEW OF BELOW
-		#Set_State(states.Ducking)
-		#While_Ducking()
-		#
-		#func While_Ducking():
-		#	#ff82f9f0 JUMP DEST
-			#Set_Action(Equates.actions.Act_Duck) #ff82fa40
-		#
-		#	# ff82fa80
-		#	MKPROC.Sleep(1, self)
-		#
-		#	if !Are_We_Facing_Opponent():
-		#		Face_Opponent()
-		#		mythread.call(While_Ducking_Start())
+		#Clear_Velocities()
+		#Face_Opponent()
+		#var seq:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_05_DUCK)
+		#mkani.act_mframew(self, 2, Equates.actions.Act_Duck, seq)
 	
-	Inc_Duck_Counter()	#ff82fb80
-
-	if Are_We_Blocking():	#ff82fba0
-		Set_State(states.Null) #ff830170
-		#ff830190 JUMP DEST
-		Do_Block_Low()
+	# joy_getup_entry
+	while Input.is_action_pressed("down"):
+		While_Ducking_Start()
 		# CODE PREVIEW OF BELOW
-			#Clear_Velocities()
-			#Check_To_Flip()
-			#Do_Block_Low2()
+			#joyd3
+			#Set_State(states.Ducking)
+			#While_Ducking()
 			#
-			#func Do_Block_Low2():
-			#	var seq3:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_12_BLOCKING_CROUCHED)
-			#	mkani.act_mframew(self, 3, Equates.actions.Act_Blockl, seq3)
-		
-		while p_action == Equates.actions.Act_Blockl:
-			While_Blocking_Low() #ff830200
-			# CODE PREVIEW OF BELOW
-			#		MKPROC.Sleep(1, self)
+			#func While_Ducking():
+			#	#ff82f9f0 JUMP DEST
+				#Set_Action(Equates.actions.Act_Duck) #ff82fa40
+			#
+			#	# ff82fa80
+			#	Sleep(1)
 			#
 			#	if !Are_We_Facing_Opponent():
 			#		Face_Opponent()
-			#		mythread.call(Do_Block_Low2())
-			#
-			#	if !Input.is_action_pressed("down"):
-			# 		RAISE BACK UP
-			#		Set_State(states.Null)		#ff82fc30
-			#		Check_To_Flip() #TODO
-			#		Do_UnDuck()
-			
-			Set_State(states.Null)		#ff82fc30
-			Check_To_Flip() #TODO
-			
-			Do_UnDuck()
-			# CODE PREVIEW OF BELOW
-				#var seq2:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_05_DUCK)
-				#seq2.reverse()
-				#mkani.act_mframew(self, 2, Equates.actions.Act_Backup, seq2)
-				#Reset_Char_Control()
-			
-			Inc_Duck_Counter() # ff830340
-			Check_For_End_Round()
-			Set_Action(Equates.actions.Act_Blockl)
-			
-			if !Are_We_Blocking():
-				Do_Unblock_Low() # need to go to ff82f9f0
-				While_Ducking() # <<--- thats ff82f9f0 # action goes to duck here
-		
-		# go to ff830200 (while blocking low) up above
-	
-	
-	##################
-	
-	if Input.is_action_pressed("down"):
-		pass # jump to ff82fa40
-	
-	Set_State(states.Null)
-	Check_To_Flip()
-	Do_UnDuck()
-	
-	#########
+			#		mythread.call(While_Ducking_Start())
 
 func Input_Right():				#FF830A60
 	Set_Action(Equates.actions.Act_None)
@@ -348,7 +290,7 @@ func Angle_Check():
 			mythread.call(Flip_Right())
 		if Input.is_action_pressed("left"):
 			mythread.call(Flip_Left())
-		MKPROC.Sleep(1, self)
+			Sleep(1)
 
 func Do_Jump_Up():
 	#play char audio or jump up
@@ -409,17 +351,17 @@ func Flight_Call(new_xveloc:float, new_yveloc:float, new_gravity:float, ani_id:i
 		#print("Loop Achieved")
 		#print(str(myobj.oyval) + " : " + str(p_ganiy))
 		# flight loop
-		MKPROC.Sleep(1, self)
+		Sleep(1)
 		
 		# NOT WORKING FOR SOME REASON!
 		# various calls can be invoked while in mid-air
 		# they are checked here
 		#p_store4.call()
-#		if p_store4 is Callable:
-#			print("Called p_store4")
-#			p_store4.call()
-#		else:
-#			print("p_store4 not callable")
+		#if p_store4 is Callable:
+		#	print("Called p_store4")
+		#	p_store4.call()
+		#else:
+		#	print("p_store4 not callable")
 		
 		mkani.next_anirate(self)
 	
@@ -480,7 +422,7 @@ func Do_Angle_Jump(x_veloc:float):
 	mkani.get_char_ani(self, Equates.ani_ids.ANI_07_FLIP_FORWARD)
 	mkani.do_next_frame(self)
 	
-	MKPROC.Sleep(3, self)
+	Sleep(3)
 	Back_To_Shang_Check()
 
 func Angle_Jump_Call():
@@ -513,7 +455,7 @@ func Walk_Forward(input:String):
 	mkani.get_char_ani(self, Equates.ani_ids.ANI_01_WALK_FWD)
 	
 	while Input.is_action_pressed(input):
-		MKPROC.Sleep(1, self)
+		Sleep(1)
 		Check_For_End_Round()
 		Flip_Input_Check()
 		Check_And_Face_Opponent()
@@ -547,7 +489,7 @@ func Walk_Backward(input:String):
 	mkani.get_char_ani(self, Equates.ani_ids.ANI_03_WALK_BWD)
 	
 	while Input.is_action_pressed(input):
-		MKPROC.Sleep(1, self)
+		Sleep(1)
 		Check_For_End_Round()
 		Flip_Input_Check()
 		Check_And_Face_Opponent()
@@ -584,24 +526,42 @@ func Do_Unblock_Hi():
 
 func Do_Duck():					#ff82fe00
 	Clear_Velocities()
-	Check_To_Flip()
+	Face_Opponent()
 	var seq:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_05_DUCK)
-	mkani.mframew(self, 2, seq)
+	mkani.act_mframew(self, 2, Equates.actions.Act_Duck, seq)
 
 func While_Ducking_Start():
+	# joyd3
 	Set_State(states.Ducking)
 	While_Ducking()
 
 func While_Ducking():
-		#ff82f9f0 JUMP DEST
-	Set_Action(Equates.actions.Act_Duck)
+	#ff82f9f0 JUMP DEST
+	# joyd4
+	while Input.is_action_pressed("down"):
+		Set_Action(Equates.actions.Act_Duck)
+		
+		# ff82fa80
+		Sleep(1)
+		
+		if !Are_We_Facing_Opponent():
+			Face_Opponent()
+			# don't need to restart as we are in that loop already
+			#mythread.call(While_Ducking_Start())
+			continue
+		
+		#joyd5
+		Inc_Duck_Counter()
+		if Are_We_Blocking():
+			Do_Block_Low()
+		
+		Check_For_End_Round()
 	
-	# ff82fa80
-	MKPROC.Sleep(1, self)
-	
-	if !Are_We_Facing_Opponent():
-		Face_Opponent()
-		mythread.call(While_Ducking_Start())
+	#joy_back_up
+	Disable_All_Buttons()
+	Face_Opponent()
+	Do_UnDuck()
+	Reset_Char_Control()
 
 func Do_UnDuck():		#ff834830
 	var seq2:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_05_DUCK)
@@ -611,8 +571,7 @@ func Do_UnDuck():		#ff834830
 	Reset_Char_Control()
 
 func Do_Block_Low():
-	Clear_Velocities()
-	Check_To_Flip()
+	Disable_All_Buttons
 	Do_Block_Low2()
 
 func Do_Block_Low2():
@@ -620,17 +579,29 @@ func Do_Block_Low2():
 	mkani.act_mframew(self, 3, Equates.actions.Act_Blockl, seq3)
 
 func While_Blocking_Low():		#ff830200
-	MKPROC.Sleep(1, self)
-	
-	if !Are_We_Facing_Opponent():
-		Face_Opponent()
-		mythread.call(Do_Block_Low2())
-	
-	if !Input.is_action_pressed("down"):
-		# RAISE BACK UP
-		Set_State(states.Null)		#ff82fc30
-		Check_To_Flip() #TODO
-		Do_UnDuck()
+	#joy_duck_block_loop
+	while Are_We_Blocking():
+		Sleep(1)
+		
+		if !Are_We_Facing_Opponent():
+			Face_Opponent()
+			Do_Block_Low2()
+			continue
+		
+		#jdblk5
+		if !Input.is_action_pressed("down"):
+			# joy_back_up
+			Disable_All_Buttons() #ff82fc30
+			Face_Opponent() #TODO
+			Do_UnDuck()
+			Reset_Char_Control
+		
+		Inc_Duck_Counter() # ff830340
+		Check_For_End_Round()
+		Set_Action(Equates.actions.Act_Blockl)
+
+	Do_Unblock_Low()
+	#JR joyd3 - While_Ducking_Start
 
 func Do_Unblock_Low():
 	var seq2:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_12_BLOCKING_CROUCHED)
@@ -716,10 +687,10 @@ func Are_We_Blocking() -> bool:
 		return true
 	else: return false
 
-func Check_Fighter_Height() -> int:
+func Check_Fighter_Height() -> float:
 	return Global.CurrentArena.Vertical_Offset - Calculate_Hitbox_Top()
 
-func Calculate_Hitbox_Top() -> int:
+func Calculate_Hitbox_Top() -> float:
 	return myobj.global_position.y
 
 func Disable_All_Buttons():
@@ -760,3 +731,6 @@ func Set_Control(control:controller):
 
 func Inc_Duck_Counter():
 	p_downcount += 1
+
+func Sleep(ticks:int):
+	MKPROC.Sleep(ticks, self)
