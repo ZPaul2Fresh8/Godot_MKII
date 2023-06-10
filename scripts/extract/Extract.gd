@@ -28,14 +28,14 @@ static func Fonts():
 
 static func Animations():
 	
-	# TODO: UNIQUE PALETTE FOR KAHN TURNING INTO STONE NEEDS ACCOUNT FOR.
-	# CURRENTLY USES HIS PRIMARY PALETTE. ALSO SOME SECRET FIGHTER FATALITY
+	# SOME SECRET FIGHTER FATALITY
 	# PALETTES ARE INCORRECT THIS IS DUE TO THE GAME NOT ORIGINALLY HAVING
 	# THEM AND THEY WILL NEED ADDED WHEN THE TIME COMES.
 	
 	const FIGHTER_ANIMS_LOC = 0x20c2a
 	const FIGHTER_BASIC_ANI_COUNT = 66
 	var FrameLog = FileAccess.open("res://assets/images/fighters/frame_log.txt", FileAccess.WRITE)
+	var SpriteList = FileAccess.open("res://assets/images/sprite_list.txt", FileAccess.READ_WRITE)
 	var AnimPath: String
 	
 	var dir = DirAccess.open("res://assets")

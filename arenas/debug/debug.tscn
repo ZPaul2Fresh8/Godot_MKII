@@ -123,6 +123,11 @@ custom_minimum_size = Vector2(100, 25)
 layout_mode = 2
 text = "State: "
 
+[node name="act" type="RichTextLabel" parent="Layer_Font/DebugContainer"]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+text = "Action:"
+
 [node name="xvel" type="RichTextLabel" parent="Layer_Font/DebugContainer"]
 custom_minimum_size = Vector2(100, 25)
 layout_mode = 2

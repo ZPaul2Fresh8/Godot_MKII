@@ -65,6 +65,7 @@ func _process(delta):
 	$"../../Layer_Font/DebugContainer/Y".text = "Y: " + str(oyval)
 	if myproc != null:
 		$"../../Layer_Font/DebugContainer/state".text = "State: " + myproc.states.keys()[myproc.mystate]
+		#$"../../Layer_Font/DebugContainer/state".text = "Action: " + str(Equates.actions.keys().
 	$"../../Layer_Font/DebugContainer/xvel".text = "X Velocity: " + str(oxvel)
 	$"../../Layer_Font/DebugContainer/yvel".text = "Y Velocity: " + str(oyvel)
 	$"../../Layer_Font/DebugContainer/oid".text = "Object ID: " + str(ochar)

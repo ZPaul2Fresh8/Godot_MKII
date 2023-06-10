@@ -51,14 +51,14 @@ var p_slave : MK_Object						# 0x190 - slave object
 var p_anitab								# 0x1b0 - current animation table
 var p_anirate : int							# 0x1d0 - animation speed
 var p_anicount : int						# 0x1e0 - animation counter
-var p_action : int							# 0x1f0 - current action
+var p_action = Equates.actions.Act_None		# 0x1f0 - current action
 var p_ganiy : int							# 0x200 - ground animation point y
 var p_flags									# 0x210 -more flags (see p_flag_bits)
 var p_downcount : int						# 0x220 -ticks i have been ducking
 var p_store1								# 0x230 -long word storage 1
 var p_store2								# 0x250 -long word storage 2
 var p_store3								# 0x270 -long word storage 3
-var p_store4 : Callable					# 0x290 -long word storage 4
+var p_store4 : Callable						# 0x290 -long word storage 4
 var p_store5								# 0x2b0 -long word storage 5
 var p_store6								# 0x2d0 -long word storage 6
 var p_store7								# 0x2f0 -long word storage 7
@@ -82,7 +82,7 @@ enum p_flag_bits {
 
 func _init(player:int):
 	print("Process initialized.")
-	
+
 	mythread = MKPROC.Create_Thread(player, self, Human_Control)
 
 	Global.Controllers.append(self)	
@@ -240,30 +240,14 @@ func Input_Down():				#ff82f960 / 159 joy.asm
 	print("Down Pressed")
 	Disable_All_Buttons
 	Do_Duck()
-	# CODE PREVIEW OF BELOW
-		#Clear_Velocities()
-		#Face_Opponent()
-		#var seq:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_05_DUCK)
-		#mkani.act_mframew(self, 2, Equates.actions.Act_Duck, seq)
 	
 	# joy_getup_entry
 	while Input.is_action_pressed("down"):
+		print("Input_Down(): Down is pressed")
 		While_Ducking_Start()
-		# CODE PREVIEW OF BELOW
-			#joyd3
-			#Set_State(states.Ducking)
-			#While_Ducking()
-			#
-			#func While_Ducking():
-			#	#ff82f9f0 JUMP DEST
-				#Set_Action(Equates.actions.Act_Duck) #ff82fa40
-			#
-			#	# ff82fa80
-			#	Sleep(1)
-			#
-			#	if !Are_We_Facing_Opponent():
-			#		Face_Opponent()
-			#		mythread.call(While_Ducking_Start())
+	
+	joy_back_up()
+
 
 func Input_Right():				#FF830A60
 	Set_Action(Equates.actions.Act_None)
@@ -539,6 +523,8 @@ func While_Ducking():
 	#ff82f9f0 JUMP DEST
 	# joyd4
 	while Input.is_action_pressed("down"):
+		print("While_Ducking(): Down is pressed.")
+		
 		Set_Action(Equates.actions.Act_Duck)
 		
 		# ff82fa80
@@ -556,8 +542,11 @@ func While_Ducking():
 			Do_Block_Low()
 		
 		Check_For_End_Round()
-	
+	joy_back_up()
+
+func joy_back_up():	
 	#joy_back_up
+	print("While_Ducking: Going Back Up")
 	Disable_All_Buttons()
 	Face_Opponent()
 	Do_UnDuck()
@@ -571,16 +560,14 @@ func Do_UnDuck():		#ff834830
 	Reset_Char_Control()
 
 func Do_Block_Low():
+	#joy_duck_block
+	print("Do_Block_Low(): Blocking Low")
 	Disable_All_Buttons
 	Do_Block_Low2()
 
-func Do_Block_Low2():
-	var seq3:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_12_BLOCKING_CROUCHED)
-	mkani.act_mframew(self, 3, Equates.actions.Act_Blockl, seq3)
-
-func While_Blocking_Low():		#ff830200
 	#joy_duck_block_loop
 	while Are_We_Blocking():
+		print("While_Blocking_low(): Blocking Low")
 		Sleep(1)
 		
 		if !Are_We_Facing_Opponent():
@@ -591,21 +578,26 @@ func While_Blocking_Low():		#ff830200
 		#jdblk5
 		if !Input.is_action_pressed("down"):
 			# joy_back_up
-			Disable_All_Buttons() #ff82fc30
-			Face_Opponent() #TODO
-			Do_UnDuck()
-			Reset_Char_Control
+			joy_back_up()
 		
 		Inc_Duck_Counter() # ff830340
 		Check_For_End_Round()
 		Set_Action(Equates.actions.Act_Blockl)
 
+	print("Unblocking Low")
 	Do_Unblock_Low()
 	#JR joyd3 - While_Ducking_Start
+
+func Do_Block_Low2():
+	Clear_Velocities()
+	Face_Opponent()
+	var seq3:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_12_BLOCKING_CROUCHED)
+	mkani.act_mframew(self, 3, Equates.actions.Act_Blockl, seq3)
 
 func Do_Unblock_Low():
 	var seq2:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_12_BLOCKING_CROUCHED)
 	seq2.reverse()
+	print(seq2)
 	mkani.act_mframew(self, 3, Equates.actions.Act_Duck, seq2)
 
 ##### GAME FLOW ROUTINES #######################################################
