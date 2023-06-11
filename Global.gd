@@ -174,7 +174,7 @@ var ground_y : int			# ground level y coordinate
 #     MORTAL KOMBAT GAME SPECIFIC RAM
 #
 #************************************
-#var gamestate : int		# state variable
+var gamestate : int = Equates.game_state.gs_fighting		# state variable
 #switch_escape,16,1 	#
 # PLAYER RAM
 #

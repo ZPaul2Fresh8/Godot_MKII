@@ -1,9 +1,11 @@
 extends MK_Object # (Sprite2D)
 class_name Fighter
 
-var Resources : Fighter_Resource
+@export var Resources : Fighter_Resource
 
-
+@export_category("Fighter")
+@export_subgroup("Overrides")
+#@export var Health = Resources.Health
 
 #p1_state,16,1		# player 1 state
 #p1_shape,32,1
@@ -22,11 +24,7 @@ var Resources : Fighter_Resource
 #p1_boq,32*(sqs+1),1	# player 1 button open queue
 #p1_joq,32*(sqs+1),1	# player 1 joystick open queue
 
-#@export var state = states.Null
-#var ochar:int
 var player_id = 0
-#@export var control = controller.Player
-@export var health = clampi(0, 0, 161)
 var rounds_won : int
 const MAX_SEGMENTS = 7
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dxwvocb0qni0u"]
+[gd_scene load_steps=9 format=3 uid="uid://dxwvocb0qni0u"]
 
 [ext_resource type="Script" path="res://arenas/debug/debug.gd" id="1_tvq0n"]
 [ext_resource type="Texture2D" uid="uid://c7prgj3owcf13" path="res://assets/pixelgrid.png" id="2_1teh7"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://7mbo4iwij0iq" path="res://icon.svg" id="2_pc871"]
 [ext_resource type="Script" path="res://fighters/Fighter.gd" id="4_vkejo"]
 [ext_resource type="Script" path="res://MK_Object.gd" id="6_vgv13"]
+[ext_resource type="Resource" uid="uid://djx71e7foya1y" path="res://fighters/0_Kung_Lao.tres" id="7_rt2iq"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0rp12"]
 
@@ -153,4 +154,5 @@ script = ExtResource("2_8t627")
 
 [node name="Fighter" type="Sprite2D" parent="Layer_Fighters"]
 script = ExtResource("4_vkejo")
+Resources = ExtResource("7_rt2iq")
 Print_Location = true

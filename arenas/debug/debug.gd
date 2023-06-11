@@ -9,8 +9,6 @@ func _ready():
 	# set cam up
 	Set_Camera_Up()
 	
-	# test comment
-
 	# set some basic arena vars up
 	Global.CurrentArena = self
 	
@@ -42,9 +40,8 @@ func _ready():
 		# finally making it appear on screen
 		Add_Object(MyFighter, $Layer_Fighters)
 		
-		#test on single thread so we can BP!
-		# spoiler alert, doesn't work...
-		#myproc.Human_Control()
+		# add this class to tree
+		add_child(MyProc)
 
 ###################### TESTING DEBUG INFO WINDOW ###############################
 #	get_viewport().gui_embed_subwindows = false
@@ -70,6 +67,7 @@ func _process(delta):
 	# stick cam to player
 	$Camera2D.position.x = Global.procs[0].myobj.oxval - 150
 	$Layer_Font.position.x = $Camera2D.position.x
+	Global.ticks +=1
 	
 
 func Set_Camera_Up():

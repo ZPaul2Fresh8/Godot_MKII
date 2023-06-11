@@ -34,9 +34,7 @@ static func Animations():
 	
 	const FIGHTER_ANIMS_LOC = 0x20c2a
 	const FIGHTER_BASIC_ANI_COUNT = 66
-	var FrameLog = FileAccess.open("res://assets/images/fighters/frame_log.txt", FileAccess.WRITE)
-	var SpriteList = FileAccess.open("res://assets/images/sprite_list.txt", FileAccess.READ_WRITE)
-	var AnimPath: String
+	var SpriteList = FileAccess.open("res://assets/images/sprite_list.txt", FileAccess.WRITE_READ)
 	
 	var dir = DirAccess.open("res://assets")
 	if !dir.dir_exists("res://assets/images"):
@@ -52,6 +50,9 @@ static func Animations():
 	#for ochar in 1:							# Extract just Lao for now
 	#	ochar = Equates.fighters.SHAO_KAHN
 	############################################################################
+	
+		var FrameLog = FileAccess.open("res://assets/images/fighters/" + 
+			Equates.fighters.keys()[ochar] + "frame_log.txt", FileAccess.WRITE)
 		
 		# IF DIR NON-EXISTENT, CREATE IT FOR CHAR
 		if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar]):
@@ -73,7 +74,6 @@ static func Animations():
 				ani_count = Equates.ani_ids_kahn.size()
 			_:
 				ani_count = Equates.ani_ids.size()
-				
 		
 		# MAKE ANIMATION DIRS & GET
 		for anim_id in ani_count:
@@ -83,6 +83,7 @@ static func Animations():
 		########################################################################
 			
 			# IF DIR NON-EXISTENT, CREATE IT FOR ANIMATION #
+			var AnimPath: String
 			match ochar:
 				Equates.fighters.KINTARO:
 					if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id]):
@@ -191,16 +192,8 @@ static func Animations():
 						pass
 
 				# IF DIR NON-EXISTENT, CREATE IT FOR ANIMATION #
-				match ochar:
-					Equates.fighters.KINTARO:
-						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num)):
-							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num))
-					Equates.fighters.SHAO_KAHN:
-						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num)):
-							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num))
-					_:
-						if !dir.dir_exists("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num)):
-							dir.make_dir("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" + Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num))
+				if !dir.dir_exists(AnimPath + "/" + str(frame_num)):
+					dir.make_dir(AnimPath + "/" + str(frame_num))
 				
 				# Static Palette Forcing (Primarily due to cloned fighters)
 				Choose_Palette(frame_num, anim_id, ochar)
@@ -216,28 +209,13 @@ static func Animations():
 						var image = Tools.Draw_Image(Tools.Get_Pointer(segment), seg_num + frame_num + anim_id)
 						if image != null:
 							var header : Array = image.get_meta("Header")
-							match ochar:
-								Equates.fighters.KINTARO:
-									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
-									Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num) + "/" +
+							var filepath = (AnimPath + "/" + str(frame_num) + "/" +
 									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
 									str(header[3]) + "_" + str(header[4]) + "_" +
 									str(header[5]) + "_" + str(header[6]) + "_" +
 									str(header[7]) + ".png")
-								Equates.fighters.SHAO_KAHN:
-									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
-									Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num) + "/" +
-									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
-									str(header[3]) + "_" + str(header[4]) + "_" +
-									str(header[5]) + "_" + str(header[6]) + "_" +
-									str(header[7]) + ".png")
-								_:
-									image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
-									Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num) + "/" +
-									str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
-									str(header[3]) + "_" + str(header[4]) + "_" +
-									str(header[5]) + "_" + str(header[6]) + "_" +
-									str(header[7]) + ".png")
+							image.save_png(filepath)
+							SpriteList.store_line(str(header[0]) + "|" + filepath)
 						
 						segment += 4
 						seg_num += 1
@@ -246,17 +224,16 @@ static func Animations():
 				else:
 					var image = Tools.Draw_Image(Tools.Get_Pointer(frame), frame_num)
 					if image != null:
-						match ochar:
-							Equates.fighters.KINTARO:
-								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
-								Equates.ani_ids_kintaro.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
-							Equates.fighters.SHAO_KAHN:
-								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
-								Equates.ani_ids_kahn.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
-							_:
-								image.save_png("res://assets/images/fighters/" + Equates.fighters.keys()[ochar] + "/" +
-								Equates.ani_ids.keys()[anim_id] + "/" + str(frame_num) + "/" + str(frame_num) +  ".png")
-
+						var header : Array = image.get_meta("Header")
+						#image.save_png(AnimPath + "/" + str(frame_num) + "/" + str(frame_num) + ".png")
+						var filepath = (AnimPath + "/" + str(frame_num) + "/" +
+							str(header[0]) + "_" + str(header[1]) + "_" + str(header[2]) + "_" +
+							str(header[3]) + "_" + str(header[4]) + "_" +
+							str(header[5]) + "_" + str(header[6]) + "_" +
+							str(header[7]) + ".png")
+						image.save_png(filepath)
+						SpriteList.store_line(str(header[0]) + "|" + filepath)
+				
 				# get next frame pointer
 				frame += 4
 				frame_num += 1

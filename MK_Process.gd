@@ -2,19 +2,21 @@
 extends Node
 class_name MK_Process
 
-# INITALIZING REFS
-var mkani = MKANI.new()
-
-# PROCESS STRUCTURE
+################################################################################
+########## CONTROL LOOP FOR BASIC INPUTS AND BASIC MOVES #######################
+################################################################################
 
 # MY ADDED VARS
 var myobj : Fighter
 var mythread : Thread
+var myinput = MKINPUT.new()
 var mystate = states.Null
 var mycontrol = controller.Player
 var timestamp_morph:int
 
+
 # ANIMATION STUFF
+var mkani = MKANI.new()
 var ani_ptr : String
 var anif_num : int
 var anif_max : int
@@ -29,6 +31,7 @@ enum states {
 enum controller {
 	Drone,
 	Player }
+
 
 #pdata
 var plink									# 0x000 - link ot next table - stored in proc array
@@ -81,17 +84,13 @@ enum p_flag_bits {
 }
 
 func _init(player:int):
-	print("Process initialized.")
-
+	# MUST ADD CLASS AS CHILD FOR _process, _ready etc.!
+	# add mkinput class to this class
+	add_child(myinput)
+	
 	mythread = MKPROC.Create_Thread(player, self, Human_Control)
 
 	Global.Controllers.append(self)	
-
-func _ready():
-	pass
-
-func _process(delta):
-	pass
 
 ##### HUMAN CONTROL ############################################################
 
@@ -115,6 +114,8 @@ func Human_Control():			#FF82EE20
 	Human_Control_Loop()
 
 func Human_Control_Loop():		#FF82EFA0
+	
+	#call(myobj.Resources.M1_Callable)
 	
 	Set_State(states.Standing)
 	
@@ -155,8 +156,8 @@ func Human_Control_Loop():		#FF82EFA0
 				# JUMP - DO BLOCK HI
 				Do_Block_Hi()
 				
-				while Input.is_action_pressed("Block"):
-					print("Block Pressed")
+				while Input.is_action_pressed("bl"):
+					#print("Block Pressed")
 					Sleep(1)
 					
 					if Input.is_action_pressed("down"):
@@ -237,17 +238,16 @@ func Input_Up():				#ff82f3e0
 	Reset_Char_Control()
 
 func Input_Down():				#ff82f960 / 159 joy.asm
-	print("Down Pressed")
-	Disable_All_Buttons
+	#print("Down Pressed")
+	Disable_All_Buttons()
 	Do_Duck()
 	
 	# joy_getup_entry
 	while Input.is_action_pressed("down"):
-		print("Input_Down(): Down is pressed")
+		#print("Input_Down(): Down is pressed")
 		While_Ducking_Start()
 	
 	joy_back_up()
-
 
 func Input_Right():				#FF830A60
 	Set_Action(Equates.actions.Act_None)
@@ -523,7 +523,7 @@ func While_Ducking():
 	#ff82f9f0 JUMP DEST
 	# joyd4
 	while Input.is_action_pressed("down"):
-		print("While_Ducking(): Down is pressed.")
+		#print("While_Ducking(): Down is pressed.")
 		
 		Set_Action(Equates.actions.Act_Duck)
 		
@@ -546,7 +546,7 @@ func While_Ducking():
 
 func joy_back_up():	
 	#joy_back_up
-	print("While_Ducking: Going Back Up")
+	#print("While_Ducking: Going Back Up")
 	Disable_All_Buttons()
 	Face_Opponent()
 	Do_UnDuck()
@@ -556,18 +556,18 @@ func Do_UnDuck():		#ff834830
 	var seq2:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_05_DUCK)
 	seq2.reverse()
 	mkani.act_mframew(self, 2, Equates.actions.Act_Backup, seq2)
-	print("Reset from Do_Unduck")
+	#print("Reset from Do_Unduck")
 	Reset_Char_Control()
 
 func Do_Block_Low():
 	#joy_duck_block
-	print("Do_Block_Low(): Blocking Low")
+	#print("Do_Block_Low(): Blocking Low")
 	Disable_All_Buttons
 	Do_Block_Low2()
 
 	#joy_duck_block_loop
 	while Are_We_Blocking():
-		print("While_Blocking_low(): Blocking Low")
+		#print("While_Blocking_low(): Blocking Low")
 		Sleep(1)
 		
 		if !Are_We_Facing_Opponent():
@@ -584,7 +584,7 @@ func Do_Block_Low():
 		Check_For_End_Round()
 		Set_Action(Equates.actions.Act_Blockl)
 
-	print("Unblocking Low")
+	#print("Unblocking Low")
 	Do_Unblock_Low()
 	#JR joyd3 - While_Ducking_Start
 
@@ -675,7 +675,7 @@ func Are_We_Fighter(fighter:Equates.fighters) -> bool:
 
 func Are_We_Blocking() -> bool:
 	# CHECK IF PLAYER IS HOLDING BLOCK
-	if Input.is_action_pressed("Block"):
+	if Input.is_action_pressed("bl"):
 		return true
 	else: return false
 
@@ -712,11 +712,11 @@ func Ground_Me():
 
 func Set_Action(act_id:Equates.actions):
 	p_action = act_id
-	print("Action: " + Equates.actions.keys()[p_action])
+	#print("Action: " + Equates.actions.keys()[p_action])
 
 func Set_State(state:states):
 	mystate = state
-	print("State: " + states.keys()[mystate])
+	#print("State: " + states.keys()[mystate])
 
 func Set_Control(control:controller):
 	mycontrol = control

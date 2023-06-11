@@ -58,6 +58,7 @@ func _notification(what):
 
 func Debug_Test():
 	# Extract.Fonts()
+	
 	#Extract.Animations()
 	
 	# TEST ANIMATIONS HERE

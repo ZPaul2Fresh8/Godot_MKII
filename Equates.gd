@@ -3,16 +3,16 @@ class_name Equates
 
 # EQUATES
 enum Inputs {
-	None,
-	Up,
-	Down,
-	Left,
-	Right,
-	High_Punch,
-	Low_Punch,
-	Block,
-	High_Kick,
-	Low_Kick }
+	up,
+	down,
+	left,
+	right,
+	hp,
+	lp,
+	bl,
+	hk,
+	lk,
+	start }
 
 const FIGHTER_COUNT = 0x10
 
