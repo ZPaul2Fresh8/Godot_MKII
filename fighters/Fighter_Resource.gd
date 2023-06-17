@@ -12,6 +12,9 @@ class_name Fighter_Resource
 @export var Versus_Image : Texture2D
 @export var BioImage : Texture2D
 
+@export_category("Strike Tables")
+@export var Strikes : Array[StrikeTable]
+
 @export_category("Palettes")
 @export var Primary_Colors : Array[Color]
 @export var Secondary_Colors : Array[Color]
@@ -40,7 +43,6 @@ class_name Fighter_Resource
 @export_range(0x4096, 0x60000, 0x4096) var Walk_BWD_Velocity : int
 @export_range(0, 2, 0.01) var Gravity_Modifier : float = 1
 
-
 @export_category("Misc")
 @export_range(1, 161, 2) var Health : int = 161
 @export_range(0, 100, 10) var Damage_Reduction : int
@@ -51,7 +53,7 @@ class_name Fighter_Resource
 @export var M1_Name : String
 @export_range(4, 0x32, 2) var M1_Input_Speed : int
 @export var M1_Inputs : Array[Equates.Inputs]
-@export var M1_Callable : String
+#var M1_Callable : Callable = Callable(self, "Move1")
 
 @export_subgroup("Fatality 1")
 @export var F1_Name : String
@@ -67,5 +69,32 @@ class_name Fighter_Resource
 func _ready():
 	pass # Replace with function body.
 
-func testy():
-	print("IT WORKED!!!!")
+func Move1():
+	print("Move 1 Here!")
+
+func Move2():
+	pass
+
+func Move3():
+	pass
+
+func Move4():
+	pass
+
+func Move5():
+	pass
+
+func Fatality1():
+	pass
+
+func Fatality2():
+	pass
+
+func Fatality3():
+	pass
+
+func Babality():
+	pass
+
+func Friendship():
+	pass

@@ -6,12 +6,13 @@ func get_char_ani(mkproc:MK_Process, ani_id:int):
 	# RETURNS INT ARRAY FOR SEQUENCE OF FRAME PLAYBACK
 	match mkproc.myobj.ochar:
 		Equates.fighters.KINTARO:
-			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids_kintaro.keys()[ani_id]) + "/"
+			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + "/" + str(Equates.ani_ids_kintaro.keys()[ani_id]) + "/"
 		Equates.fighters.SHAO_KAHN:
-			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids_kahn.keys()[ani_id]) + "/"
+			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + "/" + str(Equates.ani_ids_kahn.keys()[ani_id]) + "/"
 		_:
-			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + str(Equates.ani_ids.keys()[ani_id]) + "/"
+			mkproc.ani_ptr = mkproc.myobj.Resources.Animation_Path + "/" + str(Equates.ani_ids.keys()[ani_id]) + "/"
 	
+	#print(mkproc.ani_ptr)
 	# create playback sequence
 	var sequence : Array[int]
 	for i in DirAccess.get_directories_at(mkproc.ani_ptr):
@@ -23,6 +24,7 @@ func get_char_ani(mkproc:MK_Process, ani_id:int):
 	# store frame count
 	mkproc.anif_max = DirAccess.get_directories_at(mkproc.ani_ptr).size()
 	
+	#print("get_char_ani(): Frames: " + str(sequence))
 	return sequence
 
 # AKA CALC ANIMATION FIND END
@@ -95,7 +97,7 @@ func mframew(mkproc:MK_Process, sleep:int, sequence:Array[int]):
 		mkproc.anif_num = i
 		#print("SEQ: " + str(mkproc.anif_num))
 		do_next_frame(mkproc)
-		MKPROC.Sleep(sleep, mkproc)
+		Sleep(sleep, mkproc)
 	
 #	while mkproc.anif_num != mkproc.anif_max:
 #		do_next_frame(mkproc)
@@ -107,7 +109,7 @@ func animate_a0_frames(mkproc:MK_Process, value:int):
 	
 	for i in loops:
 		if do_next_frame(mkproc) == 0 : return
-		MKPROC.Sleep(sleep, mkproc)
+		Sleep(sleep, mkproc)
 
 # AKA ANIMATION LOAD SPRITE
 func do_next_frame(mkproc:MK_Process):
@@ -247,6 +249,23 @@ func ani2 (mkproc:MK_Process):
 	for d in range(files.size(), mkproc.myobj.MAX_SEGMENTS):
 		mkproc.myobj.Segments[d].texture = null
 
+func Sleep(time:int, myproc:MK_Process):
+	#MKPROC.Sleep(ticks, self)
+	# AFTER EACH TICK WE NEED TO CHECK THE MK_PROC FOR A CALLBACK
+	myproc.ptime=time
+	while myproc.ptime > 0:
+		
+		# delay thread
+		OS.delay_msec(Global.TICK_TIME)
+		myproc.ptime -= 1
+
+		# check for callback
+		if myproc.pwake != Callable():
+			print("We in there")
+			var jump = myproc.pwake
+			print(jump)
+			myproc.pwake = Callable()
+			jump.call()	
 
 ####################################################################################################
 

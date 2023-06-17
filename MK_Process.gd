@@ -10,10 +10,14 @@ class_name MK_Process
 var myobj : Fighter
 var mythread : Thread
 var myinput = MKINPUT.new()
+#var mymoves = MKMOVES.new()
 var mystate = states.Null
 var mycontrol = controller.Player
 var timestamp_morph:int
 
+# HIT BOX STUFF
+var Layer_Font:Panel
+var rect:ColorRect
 
 # ANIMATION STUFF
 var mkani = MKANI.new()
@@ -42,7 +46,7 @@ var pa11									# 0x060 - register a11 save
 var pa10									# 0x080 - register a10 save
 var pa9										# 0x0a0 - register a9 save
 var pa8										# 0x0c0 - register a8 save
-var pwake : Callable						# 0x0e0 - proces to run on wake?
+var pwake = Callable()						# 0x0e0 - proces to run on wake?
 
 # process storage
 var p_joyport								# 0x100 - joystick port location
@@ -61,7 +65,7 @@ var p_downcount : int						# 0x220 -ticks i have been ducking
 var p_store1								# 0x230 -long word storage 1
 var p_store2								# 0x250 -long word storage 2
 var p_store3								# 0x270 -long word storage 3
-var p_store4 : Callable						# 0x290 -long word storage 4
+var p_store4 : StringName					# 0x290 -long word storage 4
 var p_store5								# 0x2b0 -long word storage 5
 var p_store6								# 0x2d0 -long word storage 6
 var p_store7								# 0x2f0 -long word storage 7
@@ -87,6 +91,7 @@ func _init(player:int):
 	# MUST ADD CLASS AS CHILD FOR _process, _ready etc.!
 	# add mkinput class to this class
 	add_child(myinput)
+	#add_child(mymoves)
 	
 	mythread = MKPROC.Create_Thread(player, self, Human_Control)
 
@@ -105,16 +110,17 @@ func Human_Control():			#FF82EE20
 	Set_Action(Equates.actions.Act_Stance)
 	mkani.get_char_ani(self, Equates.ani_ids.ANI_00_STANCE)
 	mkani.init_anirate(self, myobj.Resources.Stance_Anim_Speed)
-	
+	print("TESTEST")
 	# WAIT HERE UNTIL ROUND STARTS
 	while Global.f_start == false:
+		print("Sleepy")
 		Sleep(1)
 		mkani.next_anirate(self)
 	
 	Human_Control_Loop()
 
 func Human_Control_Loop():		#FF82EFA0
-	
+	print("Here? Maybe?")
 	#call(myobj.Resources.M1_Callable)
 	
 	Set_State(states.Standing)
@@ -131,11 +137,12 @@ func Human_Control_Loop():		#FF82EFA0
 	Idle_Stance()
 	
 	while Global.winner_status == Equates.winner_status.No_Winner:
-	
+
 	# TURN AROUND CHECK
-		if !Are_We_Facing_Opponent():
-			Face_Opponent()
-			Reset_Char_Control()
+		if Global.Fighters.size() == 2:
+			if !Are_We_Facing_Opponent():
+				Face_Opponent()
+				Reset_Char_Control()
 		
 		# ROUND STATUS JUMP
 		Check_For_End_Round()
@@ -148,6 +155,7 @@ func Human_Control_Loop():		#FF82EFA0
 		if mystate != states.Null:
 			
 			if Are_We_Blocking():
+				
 				# FF8324C0 #
 				# NULL STATE
 				Disable_All_Buttons()
@@ -244,7 +252,7 @@ func Input_Down():				#ff82f960 / 159 joy.asm
 	
 	# joy_getup_entry
 	while Input.is_action_pressed("down"):
-		#print("Input_Down(): Down is pressed")
+		print("Input_Down(): Down is pressed")
 		While_Ducking_Start()
 	
 	joy_back_up()
@@ -252,16 +260,16 @@ func Input_Down():				#ff82f960 / 159 joy.asm
 func Input_Right():				#FF830A60
 	Set_Action(Equates.actions.Act_None)
 	
-	if !myobj.is_flipped_h():
+	if Are_We_Facing_Right():
 		Walk_Forward("right")
 	else:
-		Walk_Backward("left")
+		Walk_Backward("right")
 
 func Input_Left():				#FF830990
 	Set_Action(Equates.actions.Act_None)
 	
-	if myobj.is_flipped_h():
-		Walk_Forward("right")
+	if !Are_We_Facing_Right():
+		Walk_Forward("left")
 	else:
 		Walk_Backward("left")
 
@@ -291,6 +299,7 @@ func Do_Jump_Up():
 	#audio landing sound
 
 func Null_Call():
+	print("Null Call Executing")
 	pass
 
 func Flight(new_xveloc:float, new_yveloc:float, new_gravity:float, ani_id:int, ani_speed:int):# USED FOR JUMP ATTACKS
@@ -368,7 +377,7 @@ func Do_Angle_Jump(x_veloc:float):
 	var flip_rotation
 	
 	#right-flippin'
-	if myobj.is_flipped_h():
+	if !Are_We_Facing_Right():
 		if x_veloc < 0:
 			flip_rotation = Equates.ani_ids.ANI_07_FLIP_FORWARD
 		else:
@@ -392,8 +401,8 @@ func Do_Angle_Jump(x_veloc:float):
 	p_store8 = myobj.oxval
 	
 	# negate velocity if we're right side guy
-	if myobj.is_flipped_h():
-		x_veloc = x_veloc * -1
+#	if !Are_We_Facing_Right():
+#		x_veloc = x_veloc * -1
 	
 	#p_store4 = Angle_Jump_Call()
 	Flight_Call(x_veloc, -10, Global.angle_grav, flip_rotation, 3)
@@ -431,13 +440,14 @@ func next_flip_woosh():
 
 func Walk_Forward(input:String):
 	mkani.init_anirate(self, myobj.Resources.Walk_Anim_Speed)
-	if myobj.is_flipped_h():
-		myobj.oxvel = (myobj.Resources.Walk_Velocity) * -1
-	else:
-		myobj.oxvel = (myobj.Resources.Walk_Velocity)
+
+#	if !Are_We_Facing_Right():
+#		myobj.oxvel = (myobj.Resources.Walk_Velocity) * -1
+#	else:
+#		myobj.oxvel = (myobj.Resources.Walk_Velocity)
 		
+	myobj.oxvel = (myobj.Resources.Walk_Velocity) * myobj.scale.x
 	mkani.get_char_ani(self, Equates.ani_ids.ANI_01_WALK_FWD)
-	
 	while Input.is_action_pressed(input):
 		Sleep(1)
 		Check_For_End_Round()
@@ -465,11 +475,12 @@ func Flip_Input_Check():
 func Walk_Backward(input:String):
 	mkani.init_anirate(self, myobj.Resources.Walk_BWD_Anim_Speed)
 	
-	if myobj.is_flipped_h():
-		myobj.oxvel = (myobj.Resources.Walk_BWD_Velocity)
-	else:
-		myobj.oxvel = (myobj.Resources.Walk_BWD_Velocity) * -1
+#	if !Are_We_Facing_Right():
+#		myobj.oxvel = (myobj.Resources.Walk_BWD_Velocity)
+#	else:
+#		myobj.oxvel = (myobj.Resources.Walk_BWD_Velocity) * -1
 	
+	myobj.oxvel = ((myobj.Resources.Walk_BWD_Velocity) * myobj.scale.x) *-1
 	mkani.get_char_ani(self, Equates.ani_ids.ANI_03_WALK_BWD)
 	
 	while Input.is_action_pressed(input):
@@ -562,7 +573,7 @@ func Do_UnDuck():		#ff834830
 func Do_Block_Low():
 	#joy_duck_block
 	#print("Do_Block_Low(): Blocking Low")
-	Disable_All_Buttons
+	Disable_All_Buttons()
 	Do_Block_Low2()
 
 	#joy_duck_block_loop
@@ -597,7 +608,7 @@ func Do_Block_Low2():
 func Do_Unblock_Low():
 	var seq2:Array[int] = mkani.get_char_ani(self, Equates.ani_ids.ANI_12_BLOCKING_CROUCHED)
 	seq2.reverse()
-	print(seq2)
+	#print(seq2)
 	mkani.act_mframew(self, 3, Equates.actions.Act_Duck, seq2)
 
 ##### GAME FLOW ROUTINES #######################################################
@@ -637,19 +648,11 @@ func Reset_Char_Control():		#ff861350
 	#Reset Process Stack - irrelevant
 	Back_To_Shang_Check()
 	Check_For_Endgame()
-	
+	print("Resetting maybe?")
 	if mycontrol == controller.Player:
 		mythread.call(Human_Control_Loop())
 	else:
 		mythread.call(Drone_Control_Loop())
-
-func Am_I_Airborn() -> bool:					# AKA CHAR_VS_GROUND_COMPARE
-	if myobj.oyvel != 0 or myobj.oyval != p_ganiy:
-		return true
-	return false
-
-func Distance_From_Ground():
-	return myobj.Resources.Ground_Offset - Global.CurrentArena.Ground
 
 func Back_To_Normal():
 	# reset hit count
@@ -665,6 +668,10 @@ func Destroy_My_Projectile():
 	if !is_instance_valid(p_slave):
 		return
 	p_slave.queue_free()
+
+func Are_We_Facing_Right() -> bool:
+	if myobj.scale.x > 0: return true
+	else: return false
 
 func Check_To_Flip():
 	pass
@@ -689,16 +696,22 @@ func Disable_All_Buttons():
 	Set_State(states.Null)
 
 func Check_And_Face_Opponent():
+	if Global.Fighters.size() < 2: return
 	if Are_We_Facing_Opponent(): return
 	Face_Opponent()
 	Reset_Char_Control()
 
 func Are_We_Facing_Opponent() -> bool:
 	# 	CHECK TO SEE IF WE ARE FACING OPPONENT
-	return true
+	if myobj.oxval < p_otherguy.oxval:
+		return Are_We_Facing_Right()
+	else:
+		return !Are_We_Facing_Right()
 
 func Face_Opponent():
+	# do animation here as well
 	pass
+	#myobj.scale.x *= -1
 
 func Clear_Velocities():						# AKA stop_me
 	myobj.oxvel = 0
@@ -724,5 +737,238 @@ func Set_Control(control:controller):
 func Inc_Duck_Counter():
 	p_downcount += 1
 
-func Sleep(ticks:int):
-	MKPROC.Sleep(ticks, self)
+################################################################################
+############## UTILITY ROUTINES ################################################
+################################################################################
+
+func Am_I_Airborn() -> bool:					# AKA CHAR_VS_GROUND_COMPARE
+	if myobj.oyvel != 0 or myobj.oyval != p_ganiy:
+		return true
+	return false
+
+func Is_He_Airborn() -> bool:
+	if p_otherproc.myobj.oyvel != 0 or p_otherproc.myobj.oyval != p_ganiy:
+		return true
+	return false
+
+func Distance_From_Ground():
+	return myobj.Resources.Ground_Offset - Global.CurrentArena.Ground
+
+func Me_In_Front():
+	myobj.z_index = 0x50
+	p_otherproc.myobj.z_index = 0x4f
+
+## Answer's the question: "is my joystick moving away from other dude?"
+func Is_Stick_Away() -> bool:
+	if !Are_We_Facing_Right():
+		return Input.is_action_pressed("right")
+	else:
+		return Input.is_action_pressed("left")
+
+## elbow_check - sees if dudes are real close together and if so then
+func Elbow_Check():
+	if Am_I_Airborn():
+		return
+	if Get_His_Action() == Equates.actions.Act_Jax_Dizzy: return
+	if Get_X_Dist() > 0x40: return
+	
+	# all requirements mets, do elbow
+
+func Get_His_Action() -> Equates.actions:
+	return p_otherproc.p_action
+
+func Get_X_Dist() -> float:
+	return abs(myobj.position.x - p_otherproc.myobj.position.x)
+
+func Get_Last_Button_Pressed() -> String:
+	if Input.is_action_pressed("up"): return "up"
+	if Input.is_action_pressed("down"): return "down"
+	if Input.is_action_pressed("left"): return "left"
+	if Input.is_action_pressed("right"): return "right"
+	if Input.is_action_pressed("hp"): return "hp"
+	if Input.is_action_pressed("lp"): return "lp"
+	if Input.is_action_pressed("bl"): return "bl"
+	if Input.is_action_pressed("hk"): return "hk"
+	if Input.is_action_pressed("lk"): return "lk"
+	if Input.is_action_pressed("start"): return "start"
+	else: return "null"
+
+## table @ 0x1D752h
+func Strike_Check():
+#	a1 = x offset
+#	a2 = y offset
+#	a3 = strike box x size
+#	a4 = strike box y size
+#	a11 = [strike routine, block routine]
+#	a7 = [hit damage,blocked damage]
+	var stk:StrikeTable = myobj.Resources.Strikes[p_stk]
+	var offsetx:int = stk.OffSetX
+	var offsety:int = stk.OffSetY
+	var sizex:int = stk.SizeX
+	var sizey:int = stk.SizeY
+	var stk_routine: int = stk.HitRoutine
+	var blk_routine: int = stk.BlockRoutine
+	var hit_dmg:int = stk.HitDamage
+	var blk_dmg:int = stk.BlockDamage
+	var sb_squeeze:bool = stk.SqueezeFlag
+	
+	if !Are_We_Facing_Right():
+		offsetx = offsetx*-1
+	else:
+		offsetx -= sizex
+	
+	offsetx += myobj.oxval
+	offsety += myobj.oyval
+	
+	#display collision box flag
+	if Global.f_colbox:
+		if rect != null:
+			rect.free()
+		rect = ColorRect.new()
+		rect.color = Color.GREEN
+		rect.size = Vector2i(sizex, sizey)
+		rect.set_position(Vector2i(offsetx, offsety))
+		add_child(rect)
+
+		#print("Hitbox Size: ", rect.size)
+		#print("Hitbox Location: ", rect.position)
+	
+	#1367 joy.asm
+	sizex += offsetx								#a3
+	sizey += offsety								#a4
+	
+	var top:float = Highest_MPart(p_otherguy)		#a0
+	var bottom:float = Lowest_MPart(p_otherguy)		#a1
+	var left:float = Leftmost_MPart(p_otherguy)		#a2
+	var right:float = Rightmost_MPart(p_otherguy)	#a3
+	
+	var opp_width = abs(right - left)
+	
+	if sb_squeeze:
+		opp_width = (opp_width >> 3) + (opp_width >> 2)
+		left += opp_width
+		right -= opp_width
+		
+	Victims_Box()
+	
+
+## debug display for victims box
+func Victims_Box():
+	pass	
+		
+## Finds the object on a multipart object that's highest off ground (lowest value)
+func Highest_MPart(myobj:Fighter) -> float:
+	var value:float = 0xfff
+	for i in myobj.Segments.size():
+		if myobj.Segments[i].position.y < value:
+			value = myobj.Segments[i].position.y
+	return value
+
+## Finds the lowest part of a multipart obj	
+func Lowest_MPart(myobj:Fighter) -> float:
+	var value:float = 0
+	for i in myobj.Segments.size():
+		if myobj.Segments[i].position.y + myobj.Segments[i].texture.get_height() > value:
+			value = myobj.Segments[i].position.y + myobj.Segments[i].texture.get_height()
+	return value
+
+##
+func Leftmost_MPart(myobj:Fighter) -> float:
+	var value:float = 0xfff
+	for i in myobj.Segments.size():
+		if myobj.Segments[i].position.x < value:
+			value = myobj.Segments[i].position.x
+	return value
+
+## 
+func Rightmost_MPart(myobj:Fighter) -> float:
+	var value:float = 0
+	for i in myobj.Segments.size():
+		if myobj.Segments[i].position.x + myobj.Segments[i].texture.get_width() > value:
+			value = myobj.Segments[i].position.x + myobj.Segments[i].texture.get_width()
+	return value
+
+################################################################################
+############## BASIC MOVES #####################################################
+################################################################################
+
+func High_Punch():
+	Set_State(states.Null)
+	Me_In_Front()
+	if Is_Stick_Away():
+		pass # do power punch
+	Elbow_Check()
+	Clear_Velocities()
+	var seq = mkani.get_char_ani(self, Equates.ani_ids.ANI_19_HIGH_PUNCH)
+	
+	#while loop here
+	p_store3 = Get_Last_Button_Pressed()
+	
+	#call punch sounds
+	
+	# strike table we're using
+	p_stk = 2
+	
+	mkani.act_mframew(self, 3, Equates.actions.Act_Hipunch, seq)
+	
+	if Global.f_thatsall: pass # round over -> exit
+	
+#	clr	a10			; flag: hi punch
+#	movk	2,a11			; a11 = strike check offset to use
+#	move	a11,a0
+	Strike_Check()
+	
+
+################################################################################
+############## CAN BE MOVED INTO A PROCESS SCRIPT LATER ON #####################
+################################################################################
+func Sleep(time:int):
+	#MKPROC.Sleep(ticks, self)
+	# AFTER EACH TICK WE NEED TO CHECK THE MK_PROC FOR A CALLBACK
+	ptime=time
+	while ptime > 0:
+		
+		# delay thread
+		OS.delay_msec(Global.TICK_TIME)
+		ptime -= 1
+
+		# check for callback
+		if pwake != Callable():
+			print("We in there")
+			var jump = pwake
+			print(jump)
+			pwake = Callable()
+			jump.call()			
+
+################################################################################
+############## CALLABLES PER STATE #############################################
+################################################################################
+#bt_null	.long	0,0,0,0,0
+#
+#bt_angle_jump
+#	.long	joy_flip_punch 	; 0
+#	.long	joy_flip_punch 	; 1
+#	.long	0		; 2
+#	.long	joy_flip_kick	; 3
+#	.long	joy_flip_kick	; 4
+#
+#bt_duck
+#	.long	joy_uppercut	; 0
+#	.long	joy_duck_punch	; 1
+#	.long	joy_duck_block	; 2
+#	.long	joy_duck_kickh	; 3
+#	.long	joy_duck_kickl	; 4
+#
+#bt_stance
+#	.long	joy_hi_punch	; 0
+#	.long	joy_lo_punch	; 1
+#	.long	joy_block	; 2
+#	.long	joy_hi_kick	; 3
+#	.long	joy_med_kick	; 4
+#
+#bt_jump
+#	.long	jumpup_punch	; 0
+#	.long	jumpup_punch	; 1
+#	.long	0		; 2
+#	.long	jumpup_kick	; 3
+#	.long	jumpup_kick	; 4

@@ -7,13 +7,14 @@ class_name MKINPUT
 
 # setup input history structure
 var Slot : int = 0
-var History_Slot : Array = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+var History_Slot : Array = ["null", "null", "null", "null", "null", "null", "null", "null", "null", "null"]
 var TimeStamp_Slot : Array = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 var Hold_Time : Array = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 var Inputs : Array = [ "up", "down", "left", "right", "hp", "lp", "bl", "hk", "lk", "start"]
 
 # pull some refs
-var gamestate = Global.gamestate
+var gamestate = Equates.game_state
+var myproc : MK_Process
 	#gs_amode = 0x1,			# game is in attract mode
 	#gs_fighting = 0x2,		
 	#gs_buyin = 0x3,			
@@ -35,6 +36,7 @@ func _init():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	myproc = get_parent()
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -77,15 +79,12 @@ func _input(event):
 ################################################################################
 
 func up():
-	
-	#print("MKINPUT: up pressed")
-	
-	############################################################################
 	################ QUICK TEST OF SPECIAL MOVE INPUT VERIFICATION #############
 	############################################################################
 	var myproc : MK_Process = get_parent()
 	var spd = myproc.myobj.Resources.M1_Input_Speed
 	var inputs : Array[Equates.Inputs] = myproc.myobj.Resources.M1_Inputs
+	#! TODO: XOR inputs[2,3] by 1h if fighter is facing LEFT !#
 	
 	# set starting and ending slots
 	var slot_start = Slot - inputs.size()
@@ -102,18 +101,18 @@ func up():
 	if slot_next == History_Slot.size():
 		slot_next = slot_next - History_Slot.size()
 	
+	#  CHECK IF INPUT SEQUENCE IS CORRECT
 	for s in inputs.size():
 		if (slot_next + s) >= History_Slot.size():
 			slot_next = (slot_next + s) - History_Slot.size()
-		
-		# validate sequence through history and move requirements
 		if History_Slot[slot_next + s] != Equates.Inputs.keys()[inputs[s]]:
 			return
 	
+	# SEQUENCE WAS CORRECT, IF SPEED OF INPUTS PASS, EXECUTE
 	if (time_end - time_start) < spd:
 		#call(myproc.myobj.Resources.M1_Callable)
 		#myproc.myobj.Resources.testy()
-		print("Inputs Successful. Time Taken: " + str(time_end - time_start) +
+		print(myproc.myobj.Resources.M1_Name + " Successful. Time Taken: " + str(time_end - time_start) +
 		 " | Time Required: " + str(spd))
 		print(str(time_end) + " | " + str(time_start))
 	
@@ -133,14 +132,36 @@ func right():
 		#print("MKINPUT: right pressed")
 	
 func hp():
-	if Hold_Time[4] == 1 :
-		pass
-		#print("MKINPUT: hp pressed")
-	
-func lp():
+	if Hold_Time[4] == 1:
+
+		# fire the basic move
+		#myproc.mythread.call(mkmoves.Basic.High_Punch())
+
+		#myproc.mythread.call(myproc.mymoves.High_Punch(myproc))s
+		
+		# calculate if special move is executed as well
+		#myproc.p_store4 = Callable(myproc.mymoves.High_Punch)
+		#myproc.pwake = StringName("MKMOVES.High_Punch()")
+		
+		#myproc.pwake = MKMOVES.Basic.High_Punch(myproc)
+		#myproc.pwake = "MKMOVES.Basic.High_Punch"
+		#myproc.p_store4 = "MKMOVES.Basic.High_Punch"
+		
+		
+		# WORKS!
+		var test = Callable(do_high_punch.bind(myproc))
+		
+		#var test = Callable()
+		myproc.pwake = test
+		
+		
+		#myproc.p_store4 = "MKMOVES.Basic.High_Punch"
+		#myproc.p_store4 = Callable(MKMOVES, MKMOVES.High_Punch(myproc))
+
+func lp(mkproc:MK_Process):
 	if Hold_Time[5] == 1 :
 		pass
-		#print("MKINPUT: lp pressed")
+		print("MKINPUT: lp pressed")
 	
 func bl():
 	if Hold_Time[6] == 1 :
@@ -205,3 +226,8 @@ func lk_r():
 func start_r():
 	pass
 	#print("MKINPUT: start was held for " + str(Hold_Time[9]))
+
+func do_high_punch(myproc:MK_Process):
+	myproc.High_Punch()
+	myproc.Reset_Char_Control()
+	#myproc.mythread.call(myproc.Reset_Char_Control())

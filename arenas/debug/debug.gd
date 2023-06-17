@@ -12,36 +12,39 @@ func _ready():
 	# set some basic arena vars up
 	Global.CurrentArena = self
 	
-	for i in 1:
-		# create genric game flow process
-		#var GameFlow = MK_Process.new()
-		#var gamflow_thread = MKPROC.Create_Thread(Equates.proc_id.pid_master, GameFlow, Global.TimeKeeper(GameFlow))
-		
-		# create fighter object
-		var MyFighter = Fighter.new(0)
-		
-		# create process and thread
-		var MyProc = MK_Process.new(i)
-		
-		# add ref to obj in process
-		MyProc.myobj = MyFighter
-		MyFighter.myproc = MyProc
-		
-		# set animation ground point
-		MyProc.p_ganiy = MyFighter.oyval
-		
-		# moving sprite to a central location
-		#MyFighter.Move_Object(Global.WINDOW_SIZE[0] / 2 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
-		MyFighter.oxval = i*100 + 150
-		#MyFighter.oyval = Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset
-		#12# MyFighter.Move_Object(30*i+30 , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
-		#MyFighter.Move_Object(24*i , Global.WINDOW_SIZE[1] - Ground - MyFighter.Resources.Ground_Offset)
-		
-		# finally making it appear on screen
-		Add_Object(MyFighter, $Layer_Fighters)
-		
-		# add this class to tree
-		add_child(MyProc)
+	# create genric game flow process
+	#var GameFlow = MK_Process.new()
+	#var gamflow_thread = MKPROC.Create_Thread(Equates.proc_id.pid_master, GameFlow, Global.TimeKeeper(GameFlow))
+	
+	############## MAKE 1ST FIGHTER ############################################
+	
+	var MyFighter1 = Fighter.new(0)	# create fighter object
+	var MyProc1 = MK_Process.new(0)	# create process and thread
+	MyProc1.myobj = MyFighter1		# add ref to obj in process
+	MyFighter1.myproc = MyProc1
+	MyProc1.p_ganiy = MyFighter1.oyval	# set animation ground point
+	MyFighter1.oxval = 0
+	Add_Object(MyFighter1, $Layer_Fighters)		# finally making it appear on screen
+	add_child(MyProc1)	# add this class to tree
+	
+	############## MAKE 2ND FIGHTER ############################################
+	
+#	var MyFighter2 = Fighter.new(0)
+#	MyFighter2.scale.x = -1
+#	var MyProc2 = MK_Process.new(1)
+#	MyProc2.myobj = MyFighter2
+#	MyFighter2.myproc = MyProc2
+#	MyProc2.p_ganiy = MyFighter2.oyval
+#	MyFighter2.oxval = 100
+#	Add_Object(MyFighter2, $Layer_Fighters)
+#	add_child(MyProc2)
+	
+	############## ASSOCIATE THE FIGHTERS ######################################
+	
+#	MyProc1.p_otherproc = MyProc2
+#	MyProc1.p_otherguy = MyFighter2
+#	MyProc2.p_otherproc = MyProc1
+#	MyProc2.p_otherguy = MyFighter1
 
 ###################### TESTING DEBUG INFO WINDOW ###############################
 #	get_viewport().gui_embed_subwindows = false

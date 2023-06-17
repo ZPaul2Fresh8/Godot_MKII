@@ -1,19 +1,35 @@
-[gd_resource type="Resource" script_class="Fighter_Resource" load_steps=2 format=3 uid="uid://djx71e7foya1y"]
+[gd_resource type="Resource" script_class="Fighter_Resource" load_steps=4 format=3 uid="uid://djx71e7foya1y"]
 
 [ext_resource type="Script" path="res://fighters/Fighter_Resource.gd" id="1_55xor"]
+[ext_resource type="Script" path="res://fighters/MKSTRIKE.gd" id="1_e4706"]
+
+[sub_resource type="Resource" id="Resource_lh5k8"]
+script = ExtResource("1_e4706")
+Name = "HiPunch"
+OffSetX = 76
+OffSetY = 12
+SizeX = 45
+SizeY = 45
+HitRoutine = 2
+BlockRoutine = 2
+HitDamage = 11
+BlockDamage = 3
+Score = 0
+SqueezeFlag = true
 
 [resource]
 script = ExtResource("1_55xor")
 Name = 0
 DisplayName = "KUNG LAO"
 Index = 0
+Strikes = Array[ExtResource("1_e4706")]([null, null, SubResource("Resource_lh5k8")])
 Primary_Colors = Array[Color]([])
 Secondary_Colors = Array[Color]([])
 Fatality_Colors = Array[Color]([])
 Ground_Offset = 140
 Shadow_Adjustment = 0
-Animation_Path = "res://assets/images/fighters/KUNG_LAO/"
-Basic_Animations = Array[Animation]([null])
+Animation_Path = "res://assets/images/fighters/KUNG_LAO"
+Basic_Animations = Array[Animation]([])
 Special_Animations = Array[Animation]([])
 Walk_Anim_Speed = 5
 Walk_BWD_Anim_Speed = 6
@@ -28,7 +44,6 @@ Flags = 0
 M1_Name = "Teleport"
 M1_Input_Speed = 16
 M1_Inputs = Array[int]([1, 0])
-M1_Callable = "testy"
 F1_Name = ""
 F1_Input_Speed = 0
 F1_Inputs = Array[int]([])
